@@ -1,0 +1,50 @@
+/* Buttons */
+.dashboard .btn-primary {
+    padding: 10px 20px;
+    background-color: var(--accent-warning);
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--text-dark);
+}
+
+.dashboard .btn-primary:hover {
+    background-color: #d97706;
+}
+
+.dashboard .btn-secondary {
+    padding: 10px 20px;
+    background-color: #6b7280;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--text-white);
+}
+
+.dashboard .btn-danger {
+    padding: 10px 20px;
+    background-color: var(--accent-danger);
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--text-white);
+}
+
+.dashboard .btn-small {
+    padding: 5px 10px;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+}
+
+.dashboard .btn-remove {
+    background-color: var(--accent-danger);
+    color: var(--text-white);
+}
+
+/* Status Colors */
+.text-danger { color: var(--accent-danger) !important; }
+.text-success { color: var(--accent-success) !important; }

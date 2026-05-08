@@ -1,0 +1,56 @@
+/* Responsive */
+@media (max-width: 1200px) {
+    .dashboard .metrics-grid,
+    .dashboard .stats-grid,
+    .dashboard .charts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard .stat-card.full-width {
+        grid-column: span 1;
+    }
+
+    .dashboard .chart-card.full-width {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard .sidebar {
+        width: 200px;
+    }
+
+    .dashboard .main-content {
+        margin-left: 200px;
+    }
+
+    .dashboard .metrics-grid,
+    .dashboard .stats-grid,
+    .dashboard .charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Charts Grid */
+.dashboard .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.dashboard .chart-card {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: var(--radius-lg);
+}
+
+.dashboard .chart-card.full-width {
+    grid-column: span 2;
+}
+
+.dashboard .chart-card h4 {
+    color: var(--text-gray);
+    margin: 0 0 15px 0;
+    font-size: 14px;
+    text-transform: uppercase;
+}

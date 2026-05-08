@@ -5,7 +5,9 @@ Endpoints:
 - POST /api/orders - Crear uno
 """
 from flask import Blueprint, request, jsonify
+from flask_cors import cross_origin
 from api.models import db, Order, OrderItem
+from api.socket_instance import get_socketio
 
 orders_bp = Blueprint('orders', __name__)
 
@@ -34,9 +36,18 @@ def create_order():
     db.session.add(order)
     db.session.commit()
     
+    # Emitir evento de nuevo pedido a todos los clientes conectados
+    try:
+        sio = get_socketio()
+        if sio:
+            sio.emit('new_order', order.serialize(), to='/')
+    except Exception as e:
+        print(f"WebSocket emit error: {e}")
+    
     return jsonify(order.serialize()), 201
 
 @orders_bp.route('/<int:id>', methods=['GET'])
+@cross_origin()
 def get_order(id):
     """ obtener un pedido por id """
     order = Order.query.get(id)
@@ -45,6 +56,7 @@ def get_order(id):
     return jsonify(order.serialize()), 200
 
 @orders_bp.route('/<int:id>', methods=['PUT'])
+@cross_origin()
 def update_order(id):
     """ actualizar un pedido """
     order = Order.query.get(id)
@@ -57,6 +69,13 @@ def update_order(id):
     if 'notes' in data: order.notes = data['notes']
     
     db.session.commit()
+    # Emitir evento de actualización de pedido
+    try:
+        sio = get_socketio()
+        if sio:
+            sio.emit('order_update', order.serialize(), to='/')
+    except Exception as e:
+        print(f"WebSocket emit error: {e}")
     return jsonify(order.serialize()), 200
 
 @orders_bp.route('/<int:id>', methods=['DELETE'])
@@ -128,34 +147,46 @@ def mark_order_in_production(id):
     order = Order.query.get(id)
     if not order:
         return jsonify({'error': 'Pedido no encontrado'}), 404
-    
+
     from api.models import Recipe, Ingredient, RecipeIngredient
-    
+    from api.socket_utils import emit_stock_alert
+
     errors = []
-    
+    low_stock_alerts = []
+    LOW_STOCK_THRESHOLD = 5
+
     for item in order.items:
         recipe = Recipe.query.get(item.recipe_id)
         if not recipe:
             errors.append(f"Receta {item.recipe_id} no encontrada")
             continue
-        
-        # Por cada item del pedido, descontar ingredientes
+
         for ri in recipe.ingredients:
             ingredient = Ingredient.query.get(ri.ingredient_id)
             total_needed = ri.quantity_needed * item.quantity
-            
+
             if ingredient.current_stock < total_needed:
                 errors.append(f"Stock insuficiente para {ingredient.name}")
                 continue
-            
+
             ingredient.current_stock -= total_needed
-    
+
+            if ingredient.current_stock < LOW_STOCK_THRESHOLD:
+                low_stock_alerts.append(ingredient.serialize())
+
     if errors:
         order.status = 'stock_error'
         db.session.commit()
         return jsonify({'errors': errors, 'status': 'stock_error'}), 400
-    
+
     order.status = 'in_production'
     db.session.commit()
-    
-    return jsonify({'message': 'Pedido en producción', 'status': 'in_production'}), 200
+
+    for ing in low_stock_alerts:
+        emit_stock_alert(ing)
+
+    return jsonify({
+        'message': 'Pedido en producción',
+        'status': 'in_production',
+        'low_stock_alerts': len(low_stock_alerts)
+    }), 200

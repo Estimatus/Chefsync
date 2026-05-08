@@ -51,6 +51,25 @@ class Ingredient(db.Model):
             "is_active": self.is_active
         }
 
+class PriceHistory(db.Model):
+    """Historial de cambios de precios de ingredientes"""
+    id: Mapped[int] = mapped_column(primary_key=True)
+    ingredient_id: Mapped[int] = mapped_column(nullable=False)
+    ingredient_name: Mapped[str] = mapped_column(String(120), nullable=False)
+    old_price: Mapped[float] = mapped_column(Float, nullable=False)
+    new_price: Mapped[float] = mapped_column(Float, nullable=False)
+    changed_at: Mapped[str] = mapped_column(String(50), nullable=False)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "ingredient_id": self.ingredient_id,
+            "ingredient_name": self.ingredient_name,
+            "old_price": self.old_price,
+            "new_price": self.new_price,
+            "changed_at": self.changed_at
+        }
+
 class Recipe(db.Model):
     """
     Recetas / Platos que vendemos.
@@ -62,6 +81,7 @@ class Recipe(db.Model):
     description: Mapped[str] = mapped_column(String(255), nullable=True)
     sale_price: Mapped[float] = mapped_column(Float, nullable=False)
     margin_threshold: Mapped[float] = mapped_column(Float, default=30)
+    category: Mapped[str] = mapped_column(String(50), nullable=True, default="Sin categoría")
     is_active: Mapped[bool] = mapped_column(Boolean(), default=True)
 
     ingredients: Mapped[List["RecipeIngredient"]] = relationship(back_populates="recipe")
@@ -73,8 +93,10 @@ class Recipe(db.Model):
             "description": self.description,
             "sale_price": self.sale_price,
             "margin_threshold": self.margin_threshold,
+            "category": self.category,
             "is_active": self.is_active,
-            "ingredients": [item.serialize() for item in self.ingredients]
+            "ingredients": [item.serialize() for item in self.ingredients],
+            "ingredients_cost": self.calculate_cost()
         }
 
     def calculate_cost(self):
@@ -96,6 +118,11 @@ class Recipe(db.Model):
         if cost == 0 or self.sale_price == 0:
             return 0
         return round(((self.sale_price - cost) / self.sale_price) * 100, 2)
+
+    @property
+    def ingredients_cost(self):
+        """Alias para calculate_cost() para acceso directo"""
+        return self.calculate_cost()
 
 class RecipeIngredient(db.Model):
     """
@@ -192,5 +219,7 @@ class OrderItem(db.Model):
             "order_id": self.order_id,
             "recipe_id": self.recipe_id,
             "recipe_name": self.recipe.name,
+            "recipe_price": self.recipe.sale_price,
+            "recipe_cost": self.recipe.ingredients_cost if hasattr(self.recipe, 'ingredients_cost') else 0,
             "quantity": self.quantity,
         }

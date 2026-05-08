@@ -11,14 +11,25 @@ export const initialStore = () => {
         console.error("Error parsing user from localStorage:", e);
     }
 
+    // Recuperar gastos fijos del localStorage
+    let fixedExpenses = { enabled: false, rate: 0 };
+    try {
+        const savedFixedExpenses = localStorage.getItem("fixedExpenses");
+        if (savedFixedExpenses) {
+            fixedExpenses = JSON.parse(savedFixedExpenses);
+        }
+    } catch (e) {
+        console.error("Error parsing fixedExpenses from localStorage:", e);
+    }
+
     return {
         // Estado de autenticación
         user: user,
         isAuthenticated: !!user,
-        
+
         // Datos para la aplicación
         message: null,
-        
+
         // Datos del dashboard
         ingredients: [],
         recipes: [],
@@ -27,6 +38,11 @@ export const initialStore = () => {
         alerts: {
             lowStock: [],
             marginAlerts: [],
+        },
+
+        // Configuración
+        settings: {
+            fixedExpenses: fixedExpenses
         }
     }
 }
@@ -94,7 +110,17 @@ export default function storeReducer(store, action = {}) {
                     marginAlerts: action.payload
                 }
             };
-            
+
+        case 'set_fixed_expenses':
+            localStorage.setItem("fixedExpenses", JSON.stringify(action.payload));
+            return {
+                ...store,
+                settings: {
+                    ...store.settings,
+                    fixedExpenses: action.payload
+                }
+            };
+
         default:
             throw Error('Unknown action.');
     }

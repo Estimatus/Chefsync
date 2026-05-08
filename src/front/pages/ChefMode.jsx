@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSocket } from "../hooks/useSocket.jsx";
 
 export const ChefMode = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [orders, setOrders] = useState([]);
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const { connected } = useSocket();
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -38,9 +40,36 @@ export const ChefMode = () => {
         };
 
         fetchOrders();
-        // Actualizar cada 30 segundos
-        const interval = setInterval(fetchOrders, 30000);
-        return () => clearInterval(interval);
+
+        // Escuchar nuevos pedidos por WebSocket
+        const handleNewOrder = (event) => {
+            const order = event.detail;
+            if (order.status === "pending" || order.status === "confirmed" || order.status === "in_production") {
+                setOrders(prev => {
+                    const exists = prev.find(o => o.id === order.id);
+                    if (!exists) {
+                        return [...prev, order];
+                    }
+                    return prev;
+                });
+            }
+        };
+
+        // Escuchar actualizaciones de pedidos por WebSocket
+        const handleOrderUpdate = (event) => {
+            const updatedOrder = event.detail;
+            setOrders(prev => prev.map(o => 
+                o.id === updatedOrder.id ? { ...o, ...updatedOrder } : o
+            ));
+        };
+
+        window.addEventListener('new_order', handleNewOrder);
+        window.addEventListener('order_update', handleOrderUpdate);
+
+        return () => {
+            window.removeEventListener('new_order', handleNewOrder);
+            window.removeEventListener('order_update', handleOrderUpdate);
+        };
     }, [backendUrl]);
 
     // Marcar como listo
@@ -94,7 +123,12 @@ export const ChefMode = () => {
                     <div className="d-flex justify-content-between align-items-center">
                         <div>
                             <h2><i className="fas fa-hat-chef text-warning me-2"></i>Modo Cocinero</h2>
-                            <p className="text-muted mb-0">Pedidos para hoy</p>
+                            <p className="text-muted mb-0">
+                                Pedidos para hoy
+                                <span style={{fontSize: '12px', marginLeft: '12px', color: connected ? '#22c55e' : '#ef4444'}}>
+                                    <i className={`fas fa-circle ${connected ? 'text-success' : 'text-danger'}`}></i> {connected ? 'Conectado' : 'Desconectado'}
+                                </span>
+                            </p>
                         </div>
                         <button 
                             className="btn btn-outline-light"

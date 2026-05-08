@@ -1,0 +1,80 @@
+/* Dashboard Main Stylesheet - imports partials */
+@import './_variables.css';
+@import './_layout.css';
+@import './_buttons.css';
+@import './_modals.css';
+@import './_responsive.css';
+@import './_light-mode.css';
+
+/* Form Inputs - shared */
+.dashboard .form-input {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: var(--bg-input);
+    color: var(--text-white);
+    width: 100%;
+}
+
+.dashboard .form-select {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: var(--bg-input);
+    color: var(--text-white);
+    width: 100%;
+}
+
+/* Ingredient Table Input */
+.dashboard .table-input {
+    width: 80px;
+    padding: 5px;
+    background-color: var(--bg-input);
+    border: none;
+    color: var(--text-white);
+}
+
+/* Checkbox label */
+.dashboard .checkbox-label {
+    width: 40px;
+}
+
+/* Loading Spinner */
+.dashboard-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: var(--bg-dark);
+}
+
+.dashboard-loading .spinner-container {
+    text-align: center;
+}
+
+/* Submitting Overlay */
+.dashboard-submitting {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: var(--z-toast);
+}
+
+.dashboard-submitting .spinner-container {
+    background: var(--bg-card);
+    padding: 30px 50px;
+    border-radius: var(--radius-lg);
+    text-align: center;
+}
+
+.dashboard-submitting p {
+    color: var(--text-gray);
+    margin-top: 15px;
+    margin-bottom: 0;
+}
