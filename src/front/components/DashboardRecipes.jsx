@@ -1,15 +1,16 @@
 import React from "react";
 
-export const DashboardRecipes = ({ recipes, calculateCost, calculateMargin, onViewRecipe, onDelete }) => {
+export const DashboardRecipes = ({ recipes, calculateCost, calculateMargin, onViewRecipe, onDelete, onNewRecipe }) => {
     return (
         <div>
-            <button className="btn btn-warning mb-3" onClick={() => {}}>
+            <button className="btn btn-warning mb-3" onClick={onNewRecipe}>
                 <i className="fas fa-plus me-2"></i>Nueva Receta
             </button>
             <table className="table table-dark">
                 <thead>
                     <tr>
                         <th>Nombre</th>
+                        <th>Categoría</th>
                         <th>Precio</th>
                         <th>Coste</th>
                         <th>Margen</th>
@@ -25,6 +26,7 @@ export const DashboardRecipes = ({ recipes, calculateCost, calculateMargin, onVi
                                 <td style={{cursor: 'pointer', color: '#f59e0b'}} onClick={() => onViewRecipe(recipe)}>
                                     {recipe.name}
                                 </td>
+                                <td>{recipe.category || 'Sin categoría'}</td>
                                 <td>{recipe.sale_price}€</td>
                                 <td>{cost.toFixed(2)}€</td>
                                 <td className={margin < 30 ? "text-danger" : "text-success"}>

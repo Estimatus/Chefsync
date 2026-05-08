@@ -1,6 +1,6 @@
 import React from "react";
 
-export const DashboardIngredients = ({ ingredients, onNewIngredient }) => {
+export const DashboardIngredients = ({ ingredients, onNewIngredient, onEditIngredient }) => {
     return (
         <div>
             <button className="btn btn-warning mb-3" onClick={onNewIngredient}>
@@ -15,6 +15,7 @@ export const DashboardIngredients = ({ ingredients, onNewIngredient }) => {
                         <th>Stock</th>
                         <th>Proveedor</th>
                         <th>Estado</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,9 +29,14 @@ export const DashboardIngredients = ({ ingredients, onNewIngredient }) => {
                             </td>
                             <td>{ing.supplier || "-"}</td>
                             <td>
-                                {ing.current_stock > 0 
-                                    ? <span className="badge bg-success">✓</span> 
+                                {ing.current_stock > 0
+                                    ? <span className="badge bg-success">✓</span>
                                     : <span className="badge bg-warning">Comprar</span>}
+                            </td>
+                            <td>
+                                <button className="btn btn-sm btn-outline-warning me-1" onClick={() => onEditIngredient(ing)}>
+                                    <i className="fas fa-edit"></i>
+                                </button>
                             </td>
                         </tr>
                     ))}

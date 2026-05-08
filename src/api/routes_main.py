@@ -2,7 +2,6 @@
 API principal - registra todos los blueprints.
 """
 from flask import Blueprint, jsonify
-from flask_cors import CORS
 from api.routes.ingredients import ingredients_bp
 from api.routes.recipes import recipes_bp
 from api.routes.clients import clients_bp
@@ -11,8 +10,6 @@ from api.routes.users import users_bp
 from api.routes.recipe_items import recipe_ingredients_bp
 
 api = Blueprint('api', __name__)
-
-CORS(api)
 
 # Hello endpoint
 @api.route('/hello', methods=['POST', 'GET'])

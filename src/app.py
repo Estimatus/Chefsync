@@ -5,19 +5,27 @@ import os
 from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
+from flask_socketio import SocketIO, emit
+from flask_cors import CORS
 from api.utils import APIException, generate_sitemap
 from api.models import db
 from api.routes_main import api as api_blueprint
 from api.admin import setup_admin
 from api.commands import setup_commands
 
-# from models import Person
-
 ENV = "development"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../dist/')
 app = Flask(__name__)
 app.url_map.strict_slashes = False
+
+# CORS más permisivo para desarrollo
+CORS(app, resources={r"/*": {"origins": "*"}}, expose_headers=['Content-Type'])
+
+# Inicializar SocketIO
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+from api.socket_instance import set_socketio
+set_socketio(socketio)
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
@@ -66,8 +74,17 @@ def serve_any_other_file(path):
     response.cache_control.max_age = 0  # avoid cache memory
     return response
 
+# WebSocket Events
+@socketio.on('connect')
+def handle_connect():
+    print('Cliente conectado')
+    emit('connected', {'message': 'Conectado al servidor'})
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    print('Cliente desconectado')
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
-    app.run(host='0.0.0.0', port=PORT, debug=True)
+    socketio.run(app, host='0.0.0.0', port=PORT, debug=True)

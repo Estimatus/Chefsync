@@ -30,6 +30,7 @@ def create_recipe():
         description=data.get('description'),
         sale_price=float(data['sale_price']),
         margin_threshold=float(data.get('margin_threshold', 30)),
+        category=data.get('category', 'Sin categoría'),
         is_active=True
     )
     
@@ -58,6 +59,7 @@ def update_recipe(id):
     if 'description' in data: recipe.description = data['description']
     if 'sale_price' in data: recipe.sale_price = float(data['sale_price'])
     if 'margin_threshold' in data: recipe.margin_threshold = float(data['margin_threshold'])
+    if 'category' in data: recipe.category = data['category']
     
     db.session.commit()
     return jsonify(recipe.serialize()), 200
