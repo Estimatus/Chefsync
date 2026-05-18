@@ -31,11 +31,17 @@
     flex-shrink: 0;
 }
 
+
 /* ===== CONTENT AREA ===== */
 .main-content > *:not(h2) {
     padding: 20px 28px;
     overflow-y: auto;
     flex: 1;
+}
+
+/* ===== FIX ESPACIO PANELS ===== */
+.main-content > *:not(h2) > * {
+    margin-top: 0 !important;
 }
 
 /* ===== METRICS GRID ===== */
@@ -488,12 +494,3 @@ button.btn-warning {
     border-color: var(--border2) !important;
 }
 
-/* ===== FIX ESPACIO PANELS ===== */
-.main-content > div {
-    padding-top: 20px;
-}
-
-/* ===== FIX ESPACIO PANELS ===== */
-.main-content > *:not(h2) {
-    padding-top: 16px !important;
-}
