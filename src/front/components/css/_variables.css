@@ -1,39 +1,61 @@
 :root {
-    --bg-dark: #0f0f1a;
-    --bg-sidebar: #1a1a2e;
-    --bg-card: #1e1e2f;
-    --bg-input: #2d2d3f;
+    /* === Nueva paleta Chefsync === */
+    --bg: #0f0f11;
+    --bg2: #16161a;
+    --bg3: #1e1e24;
+    --bg4: #26262e;
 
-    --text-white: #ffffff;
-    --text-gray: #aaa;
-    --text-dark: #1a1a2e;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.13);
 
-    --accent-warning: #f59e0b;
-    --accent-success: #22c55e;
-    --accent-danger: #ef4444;
-    --accent-info: #06b6d4;
-    --accent-primary: #3b82f6;
-    --accent-purple: #8b5cf6;
+    --text: #f0efe8;
+    --muted: #888790;
 
-    --border-color: #3d3d5c;
+    --accent: #c8f060;
+    --accent2: #6c63ff;
+    --accent3: #ff6b6b;
+    --accent4: #ffb347;
 
-    --sidebar-width: 250px;
-    --radius-sm: 4px;
-    --radius-md: 5px;
-    --radius-lg: 15px;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
 
-    --shadow: 0 4px 12px rgba(0,0,0,0.3);
-    --shadow-light: 0 2px 8px rgba(0,0,0,0.1);
+    /* === Compatibilidad con código existente === */
+    --bg-dark: var(--bg);
+    --bg-sidebar: var(--bg2);
+    --bg-card: var(--bg2);
+    --bg-input: var(--bg3);
+
+    --text-white: var(--text);
+    --text-gray: var(--muted);
+    --text-dark: #0f0f11;
+
+    --accent-warning: var(--accent4);
+    --accent-success: var(--accent);
+    --accent-danger: var(--accent3);
+    --accent-info: var(--accent2);
+    --accent-primary: var(--accent2);
+    --accent-purple: var(--accent2);
+
+    --border-color: var(--border2);
+
+    --sidebar-width: 220px;
+    --radius-sm: 6px;
+    --radius-md: 9px;
+    --radius-lg: 14px;
+
+    --shadow: 0 4px 12px rgba(0,0,0,0.4);
+    --shadow-light: 0 2px 8px rgba(0,0,0,0.2);
 
     --z-modal: 99999;
     --z-toast: 999999;
 }
 
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
 }

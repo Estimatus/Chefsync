@@ -35,46 +35,38 @@ export const IngredientsPanel = ({ ingredients, onNewIngredient, onEditIngredien
 
     return (
         <>
-            <div style={{ marginBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                <button className="btn-primary" onClick={onNewIngredient}>
+                    + Nuevo Ingrediente
+                </button>
                 <input
                     type="text"
                     placeholder="Buscar ingrediente..."
                     value={searchTerm}
                     onChange={(e) => handleSearch(e.target.value)}
                     className="form-input"
-                    style={{ maxWidth: '300px' }}
+                    style={{ maxWidth: '280px' }}
                 />
-                <button className="btn-secondary" onClick={onExport} style={{ padding: '8px 15px' }}>
-                    <i className="fas fa-download me-2"></i>Exportar CSV
-                </button>
-            </div>
-            <DashboardIngredients
-                ingredients={paginatedData}
-                onNewIngredient={onNewIngredient}
-                onEditIngredient={onEditIngredient}
-            />
-            {totalPages > 1 && (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginTop: '20px' }}>
-                    <button
-                        className="btn-secondary"
-                        onClick={() => changePage(pagination.page - 1)}
-                        disabled={pagination.page === 1}
-                        style={{ padding: '5px 10px' }}
-                    >
-                        <i className="fas fa-chevron-left"></i>
-                    </button>
-                    <span style={{ color: '#aaa' }}>Página {pagination.page} de {totalPages}</span>
-                    <button
-                        className="btn-secondary"
-                        onClick={() => changePage(pagination.page + 1)}
-                        disabled={pagination.page === totalPages}
-                        style={{ padding: '5px 10px' }}
-                    >
-                        <i className="fas fa-chevron-right"></i>
+                <div style={{ marginLeft: 'auto' }}>
+                    <button className="btn-secondary" onClick={onExport} style={{ padding: '8px 15px' }}>
+                        Exportar CSV
                     </button>
                 </div>
+            </div>
+
+            <DashboardIngredients
+                ingredients={paginatedData}
+                onEditIngredient={onEditIngredient}
+            />
+
+            {totalPages > 1 && (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginTop: '20px' }}>
+                    <button className="btn-secondary" onClick={() => changePage(pagination.page - 1)} disabled={pagination.page === 1} style={{ padding: '5px 10px' }}>‹</button>
+                    <span style={{ color: 'var(--muted)', fontSize: '13px' }}>Página {pagination.page} de {totalPages}</span>
+                    <button className="btn-secondary" onClick={() => changePage(pagination.page + 1)} disabled={pagination.page === totalPages} style={{ padding: '5px 10px' }}>›</button>
+                </div>
             )}
-            <p style={{ textAlign: 'center', color: '#aaa', marginTop: '10px' }}>
+            <p style={{ textAlign: 'center', color: 'var(--muted)', marginTop: '10px', fontSize: '12px' }}>
                 Mostrando {paginatedData.length} de {filteredData.length} ingredientes
             </p>
         </>

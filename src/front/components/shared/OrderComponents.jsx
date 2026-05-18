@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useRef } from "react";
+import { animate } from "animejs";
 
 export const OrderStatusSelect = ({ order, onStatusChange, onStartProduction, onEditOrder }) => {
+    const selectRef = useRef(null);
+
     const getStatusColor = (status) => {
         switch (status) {
             case 'pending': return '#f59e0b';
@@ -25,10 +28,20 @@ export const OrderStatusSelect = ({ order, onStatusChange, onStartProduction, on
         return labels[status] || status;
     };
 
+    const handleClick = () => {
+        animate(selectRef.current, {
+            scale: [1, 1.1, 1],
+            duration: 300,
+            easing: 'easeOutElastic(1, .5)'
+        });
+    };
+
     return (
         <select
+            ref={selectRef}
             value={order.status}
             onChange={(e) => onStatusChange(order.id, e.target.value)}
+            onClick={handleClick}
             style={{
                 padding: '5px',
                 backgroundColor: getStatusColor(order.status),
