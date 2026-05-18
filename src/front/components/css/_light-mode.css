@@ -1,0 +1,58 @@
+/* Light Mode Styles */
+.dashboard.light-mode {
+    background: #ffffff;
+}
+
+.dashboard.light-mode .sidebar {
+    background: #2c3e50;
+}
+
+.dashboard.light-mode .sidebar-nav a {
+    color: #bdc3c7;
+}
+
+.dashboard.light-mode .sidebar-nav a:hover,
+.dashboard.light-mode .sidebar-nav a.active {
+    background: #34495e;
+    color: var(--text-white);
+}
+
+.dashboard.light-mode .main-content h2 {
+    color: #2c3e50;
+}
+
+.dashboard.light-mode .metric-card,
+.dashboard.light-mode .stat-card {
+    background: #ecf0f1;
+    box-shadow: var(--shadow-light);
+}
+
+.dashboard.light-mode .metric-info h3,
+.dashboard.light-mode .stat-card h3 {
+    color: #2c3e50;
+}
+
+.dashboard.light-mode .metric-info p,
+.dashboard.light-mode .stat-card h4 {
+    color: #7f8c8d;
+}
+
+.dashboard.light-mode .table-dark {
+    background: #ecf0f1;
+}
+
+.dashboard.light-mode .form-input,
+.dashboard.light-mode .form-select {
+    background-color: #ecf0f1;
+    color: #2c3e50;
+    border: 1px solid #bdc3c7;
+}
+
+.dashboard.light-mode .modal-content {
+    background-color: #ffffff;
+    color: #2c3e50;
+}
+
+.dashboard.light-mode .stat-card table {
+    color: #2c3e50;
+}
