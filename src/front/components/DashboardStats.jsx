@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { animate } from 'animejs';
 
 export const DashboardStats = ({ orders, recipes, calculateCost, fixedExpenses }) => {
+    const statsRef = useRef(null);
+
     const { enabled: fixedEnabled, rate: fixedRate, totalMonthly, expenses } = fixedExpenses || { enabled: false, rate: 0, totalMonthly: 0, expenses: [] };
 
     const completedOrders = orders.filter(o =>
@@ -52,27 +55,73 @@ export const DashboardStats = ({ orders, recipes, calculateCost, fixedExpenses }
         return 'Crítico';
     };
 
+    useEffect(() => {
+        if (!statsRef.current) return;
+
+        const statCards = statsRef.current.querySelectorAll('.stat-card');
+        statCards.forEach((card, index) => {
+            animate(card, {
+                translateY: [20, 0],
+                opacity: [0, 1],
+                delay: index * 80,
+                easing: 'easeOutQuad',
+                duration: 500
+            });
+        });
+
+        const counters = [
+            { selector: '.counter-revenue', target: totalRevenue, suffix: '€' },
+            { selector: '.counter-profit', target: totalProfit, suffix: '€' },
+            { selector: '.counter-completed', target: completedOrders.length, suffix: '' },
+            { selector: '.counter-ticket', target: averageTicket, suffix: '€' },
+            { selector: '.counter-inproduction', target: inProductionCount, suffix: '' }
+        ];
+
+        counters.forEach(({ selector, target, suffix }) => {
+            const el = statsRef.current.querySelector(selector);
+            if (!el) return;
+
+            const start = performance.now();
+            const duration = 800;
+
+            const animateCounter = (currentTime) => {
+                const elapsed = currentTime - start;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = target * eased;
+
+                el.textContent = (target >= 100 ? Math.round(current) : current.toFixed(2).replace(/\.00$/, '')) + suffix;
+
+                if (progress < 1) {
+                    requestAnimationFrame(animateCounter);
+                }
+            };
+
+            requestAnimationFrame(animateCounter);
+        });
+    }, [totalRevenue, totalProfit, completedOrders.length, averageTicket, inProductionCount]);
+
     return (
-        <div className="stats-grid">
+        <div className="stats-grid" ref={statsRef}>
             <div className="stat-card">
                 <h4>Ingresos Totales</h4>
-                <h3>{totalRevenue.toFixed(2)}€</h3>
+                <h3 className="counter-revenue">{totalRevenue.toFixed(2)}€</h3>
             </div>
             <div className="stat-card" style={{ backgroundColor: '#1a3d1a', border: '1px solid #22c55e' }}>
                 <h4>Ganancia Neta</h4>
-                <h3 style={{ color: '#22c55e' }}>{totalProfit.toFixed(2)}€</h3>
+                <h3 className="counter-profit" style={{ color: '#22c55e' }}>{totalProfit.toFixed(2)}€</h3>
             </div>
             <div className="stat-card">
                 <h4>Pedidos Entregados</h4>
-                <h3>{completedOrders.length}</h3>
+                <h3 className="counter-completed">{completedOrders.length}</h3>
             </div>
             <div className="stat-card">
                 <h4>Ticket Promedio</h4>
-                <h3>{averageTicket.toFixed(2)}€</h3>
+                <h3 className="counter-ticket">{averageTicket.toFixed(2)}€</h3>
             </div>
             <div className="stat-card">
                 <h4>Pedidos en Producción</h4>
-                <h3>{inProductionCount}</h3>
+                <h3 className="counter-inproduction">{inProductionCount}</h3>
             </div>
             {fixedEnabled && totalMonthly > 0 && (
                 <div className="stat-card" style={{ backgroundColor: '#3d2d1a', border: '1px solid #f59e0b' }}>

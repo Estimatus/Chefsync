@@ -35,7 +35,7 @@ export const IngredientsPanel = ({ ingredients, onNewIngredient, onEditIngredien
 
     return (
         <>
-            <div style={{ marginBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
                 <input
                     type="text"
                     placeholder="Buscar ingrediente..."
