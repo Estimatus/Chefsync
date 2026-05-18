@@ -12,7 +12,6 @@ export const Login = () => {
         e.preventDefault();
         setError("");
         setLoading(true);
-
         try {
             const backendUrl = import.meta.env.VITE_BACKEND_URL;
             const response = await fetch(`${backendUrl}/api/users/login`, {
@@ -20,18 +19,10 @@ export const Login = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
             });
-
             const data = await response.json();
-
             if (response.ok) {
-                // Guardar user en localStorage
                 localStorage.setItem("user", JSON.stringify(data.user));
-                // Redirigir según rol
-                if (data.user.role === "admin") {
-                    navigate("/admin");
-                } else {
-                    navigate("/chef");
-                }
+                navigate(data.user.role === "admin" ? "/admin" : "/chef");
             } else {
                 setError(data.error || "Error al iniciar sesión");
             }
@@ -43,141 +34,156 @@ export const Login = () => {
     };
 
     return (
-        <div className="login-page">
-            <div className="login-container">
-                <div className="login-card">
-                    <div className="text-center mb-4">
-                        <i className="fas fa-utensils fa-3x text-warning"></i>
-                        <h2 className="mt-3">ChefSync</h2>
-                        <p className="text-muted">Inicia sesión para continuar</p>
+        <div style={{
+            minHeight: "100vh",
+            background: "var(--bg)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontFamily: "var(--font-body)",
+            position: "relative",
+            overflow: "hidden",
+        }}>
+            {/* Fondo decorativo */}
+            <div style={{
+                position: "absolute", inset: 0, zIndex: 0,
+                background: "radial-gradient(ellipse at 20% 50%, rgba(108,99,255,0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(200,240,96,0.06) 0%, transparent 50%)",
+            }} />
+
+            {/* Card */}
+            <div style={{
+                position: "relative", zIndex: 1,
+                width: "100%", maxWidth: "400px",
+                margin: "20px",
+                background: "var(--bg2)",
+                border: "1px solid var(--border2)",
+                borderRadius: "20px",
+                padding: "40px",
+                boxShadow: "0 24px 64px rgba(0,0,0,0.4)",
+            }}>
+                {/* Logo */}
+                <div style={{ textAlign: "center", marginBottom: "32px" }}>
+                    <div style={{
+                        width: "52px", height: "52px",
+                        background: "var(--accent)",
+                        borderRadius: "14px",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginBottom: "16px",
+                    }}>
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0f0f11" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+                        </svg>
                     </div>
-
-                    <form onSubmit={handleSubmit}>
-                        {error && (
-                            <div className="alert alert-danger py-2">
-                                {error}
-                            </div>
-                        )}
-
-                        <div className="mb-3">
-                            <label className="form-label">Email</label>
-                            <div className="input-group">
-                                <span className="input-group-text">
-                                    <i className="fas fa-envelope"></i>
-                                </span>
-                                <input
-                                    type="email"
-                                    className="form-control"
-                                    placeholder="tu@email.com"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="mb-4">
-                            <label className="form-label">Contraseña</label>
-                            <div className="input-group">
-                                <span className="input-group-text">
-                                    <i className="fas fa-lock"></i>
-                                </span>
-                                <input
-                                    type="password"
-                                    className="form-control"
-                                    placeholder="••••••••"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <button 
-                            type="submit" 
-                            className="btn btn-warning w-100 py-2"
-                            disabled={loading}
-                        >
-                            {loading ? (
-                                <span>
-                                    <i className="fas fa-spinner fa-spin me-2"></i>
-                                    Iniciando...
-                                </span>
-                            ) : (
-                                <span>
-                                    <i className="fas fa-sign-in-alt me-2"></i>
-                                    Iniciar Sesión
-                                </span>
-                            )}
-                        </button>
-                    </form>
-
-                    <div className="text-center mt-4">
-                        <a href="/" className="text-muted text-decoration-none">
-                            <i className="fas fa-arrow-left me-1"></i>
-                            Volver al inicio
-                        </a>
+                    <div style={{ fontFamily: "var(--font-head)", fontSize: "24px", fontWeight: 800, letterSpacing: "-0.5px", color: "var(--text)", marginBottom: "6px" }}>
+                        Chef<span style={{ color: "var(--accent)" }}>sync</span>
+                    </div>
+                    <div style={{ fontSize: "13px", color: "var(--muted)" }}>
+                        Inicia sesión para continuar
                     </div>
                 </div>
-            </div>
 
-            <style>{`
-                .login-page {
-                    min-height: 100vh;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-                }
-                .login-container {
-                    width: 100%;
-                    max-width: 400px;
-                    padding: 20px;
-                }
-                .login-card {
-                    background: #1e1e2f;
-                    padding: 40px;
-                    border-radius: 15px;
-                    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-                }
-                .login-card h2 {
-                    color: white;
-                }
-                .form-control {
-                    background: #2d2d3f;
-                    border: 1px solid #3d3d4f;
-                    color: white;
-                }
-                .form-control:focus {
-                    background: #2d2d3f;
-                    border-color: #f59e0b;
-                    color: white;
-                    box-shadow: 0 0 0 0.2rem rgba(245, 158, 11, 0.25);
-                }
-                .input-group-text {
-                    background: #2d2d3f;
-                    border: 1px solid #3d3d4f;
-                    border-right: none;
-                    color: #aaa;
-                }
-                .btn-warning {
-                    background: #f59e0b;
-                    border: none;
-                    color: #1a1a2e;
-                    font-weight: 600;
-                }
-                .btn-warning:hover {
-                    background: #d97706;
-                    color: #1a1a2e;
-                }
-                .btn-warning:disabled {
-                    background: #f59e0b;
-                    opacity: 0.7;
-                }
-                .form-label {
-                    color: #aaa;
-                }
-            `}</style>
+                {/* Error */}
+                {error && (
+                    <div style={{
+                        background: "rgba(255,107,107,0.1)",
+                        border: "1px solid rgba(255,107,107,0.3)",
+                        borderRadius: "10px",
+                        padding: "10px 14px",
+                        fontSize: "13px",
+                        color: "var(--accent3)",
+                        marginBottom: "20px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                    }}>
+                        ⚠ {error}
+                    </div>
+                )}
+
+                {/* Form */}
+                <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                    <div>
+                        <label style={{
+                            display: "block", fontSize: "11px", fontWeight: 600,
+                            color: "var(--muted)", marginBottom: "6px",
+                            textTransform: "uppercase", letterSpacing: "0.06em"
+                        }}>
+                            Email
+                        </label>
+                        <input
+                            type="email"
+                            placeholder="tu@email.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            style={{
+                                width: "100%", background: "var(--bg3)",
+                                border: "1px solid var(--border)",
+                                borderRadius: "10px", padding: "10px 14px",
+                                fontSize: "14px", color: "var(--text)",
+                                fontFamily: "var(--font-body)", outline: "none",
+                                transition: "border-color 0.15s", boxSizing: "border-box",
+                            }}
+                            onFocus={e => e.target.style.borderColor = "var(--accent)"}
+                            onBlur={e => e.target.style.borderColor = "var(--border)"}
+                        />
+                    </div>
+
+                    <div>
+                        <label style={{
+                            display: "block", fontSize: "11px", fontWeight: 600,
+                            color: "var(--muted)", marginBottom: "6px",
+                            textTransform: "uppercase", letterSpacing: "0.06em"
+                        }}>
+                            Contraseña
+                        </label>
+                        <input
+                            type="password"
+                            placeholder="••••••••"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            style={{
+                                width: "100%", background: "var(--bg3)",
+                                border: "1px solid var(--border)",
+                                borderRadius: "10px", padding: "10px 14px",
+                                fontSize: "14px", color: "var(--text)",
+                                fontFamily: "var(--font-body)", outline: "none",
+                                transition: "border-color 0.15s", boxSizing: "border-box",
+                            }}
+                            onFocus={e => e.target.style.borderColor = "var(--accent)"}
+                            onBlur={e => e.target.style.borderColor = "var(--border)"}
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        style={{
+                            width: "100%", padding: "12px",
+                            background: loading ? "var(--bg4)" : "var(--accent)",
+                            color: "#0f0f11", border: "none",
+                            borderRadius: "10px", fontSize: "14px",
+                            fontWeight: 700, cursor: loading ? "not-allowed" : "pointer",
+                            fontFamily: "var(--font-head)", letterSpacing: "0.02em",
+                            transition: "background 0.15s", marginTop: "4px",
+                        }}
+                        onMouseEnter={e => { if (!loading) e.target.style.background = "#d4f472"; }}
+                        onMouseLeave={e => { if (!loading) e.target.style.background = "var(--accent)"; }}
+                    >
+                        {loading ? "Iniciando sesión..." : "Iniciar sesión →"}
+                    </button>
+                </form>
+
+                {/* Footer */}
+                <div style={{ textAlign: "center", marginTop: "24px" }}>
+                    <a href="/" style={{ fontSize: "12px", color: "var(--muted)", textDecoration: "none" }}>
+                        ← Volver al inicio
+                    </a>
+                </div>
+            </div>
         </div>
     );
 };
