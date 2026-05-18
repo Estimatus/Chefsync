@@ -33,7 +33,7 @@ export const RecipesPanel = ({ recipes, onViewRecipe, onDelete, onNewRecipe, onE
 
     return (
         <>
-            <div style={{ marginBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ marginBottom: '0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <input
                     type="text"
                     placeholder="Buscar receta..."

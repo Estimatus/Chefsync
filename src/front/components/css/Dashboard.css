@@ -33,7 +33,7 @@
 
 /* ===== CONTENT AREA ===== */
 .main-content > *:not(h2) {
-    padding: 24px 28px;
+    padding: 20px 28px;
     overflow-y: auto;
     flex: 1;
 }
@@ -486,4 +486,14 @@ button.btn-warning {
 .form-check-input {
     background-color: var(--bg4) !important;
     border-color: var(--border2) !important;
+}
+
+/* ===== FIX ESPACIO PANELS ===== */
+.main-content > div {
+    padding-top: 20px;
+}
+
+/* ===== FIX ESPACIO PANELS ===== */
+.main-content > *:not(h2) {
+    padding-top: 16px !important;
 }
