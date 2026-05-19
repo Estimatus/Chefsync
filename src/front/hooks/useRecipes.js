@@ -1,10 +1,9 @@
 import { useState, useCallback } from 'react';
+import { apiFetch } from '../utils/api';
 
 const convertToBaseUnit = (value, fromUnit, baseUnit) => {
     if (baseUnit === 'kg' && fromUnit === 'g') return value / 1000;
     if (baseUnit === 'l' && fromUnit === 'ml') return value / 1000;
-    if (baseUnit === 'kg' && fromUnit === 'kg') return value;
-    if (baseUnit === 'l' && fromUnit === 'l') return value;
     return value;
 };
 
@@ -15,7 +14,7 @@ export const useRecipes = (backendUrl, dispatch) => {
     const fetchRecipes = useCallback(async () => {
         try {
             setLoading(true);
-            const resp = await fetch(`${backendUrl}/api/recipes`);
+            const resp = await apiFetch(`${backendUrl}/api/recipes`);
             const data = await resp.json();
             dispatch({ type: 'set_recipes', payload: data });
             return data;
@@ -30,9 +29,8 @@ export const useRecipes = (backendUrl, dispatch) => {
     const createRecipe = useCallback(async (recipe, ingredients) => {
         try {
             setLoading(true);
-            const r = await fetch(`${backendUrl}/api/recipes`, {
+            const r = await apiFetch(`${backendUrl}/api/recipes`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...recipe, sale_price: parseFloat(recipe.sale_price) })
             });
             const createdRecipe = await r.json();
@@ -41,9 +39,8 @@ export const useRecipes = (backendUrl, dispatch) => {
                 const baseUnit = ing.unit || 'kg';
                 const displayUnit = ing.display_unit || baseUnit;
                 const convertedQty = convertToBaseUnit(ing.quantity_needed, displayUnit, baseUnit);
-                await fetch(`${backendUrl}/api/recipes/${createdRecipe.id}/ingredients`, {
+                await apiFetch(`${backendUrl}/api/recipes/${createdRecipe.id}/ingredients`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ingredient_id: ing.ingredient_id, quantity_needed: convertedQty })
                 });
             }
@@ -61,9 +58,8 @@ export const useRecipes = (backendUrl, dispatch) => {
     const updateRecipe = useCallback(async (id, recipe, editIngredients, originalIngredients) => {
         try {
             setLoading(true);
-            await fetch(`${backendUrl}/api/recipes/${id}`, {
+            await apiFetch(`${backendUrl}/api/recipes/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...recipe, sale_price: parseFloat(recipe.sale_price) })
             });
 
@@ -72,30 +68,24 @@ export const useRecipes = (backendUrl, dispatch) => {
 
             for (const ing of toRemove) {
                 if (ing.ingredient_id) {
-                    await fetch(`${backendUrl}/api/recipes/${id}/ingredients/${ing.ingredient_id}`, { method: 'DELETE' });
+                    await apiFetch(`${backendUrl}/api/recipes/${id}/ingredients/${ing.ingredient_id}`, { method: 'DELETE' });
                 }
             }
 
             const toUpdate = editIngredients.filter(ing => ing.id && currentIds.includes(ing.ingredient_id));
             for (const ing of toUpdate) {
-                const baseUnit = ing.unit;
-                const displayUnit = ing.display_unit || 'kg';
-                const convertedQty = convertToBaseUnit(ing.quantity_needed, displayUnit, baseUnit);
-                await fetch(`${backendUrl}/api/recipes/${id}/ingredients/${ing.ingredient_id}`, {
+                const convertedQty = convertToBaseUnit(ing.quantity_needed, ing.display_unit || 'kg', ing.unit);
+                await apiFetch(`${backendUrl}/api/recipes/${id}/ingredients/${ing.ingredient_id}`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ quantity_needed: convertedQty })
                 });
             }
 
             const toAdd = editIngredients.filter(ing => !currentIds.includes(ing.ingredient_id));
             for (const ing of toAdd) {
-                const baseUnit = ing.unit || 'kg';
-                const displayUnit = ing.display_unit || baseUnit;
-                const convertedQty = convertToBaseUnit(ing.quantity_needed, displayUnit, baseUnit);
-                await fetch(`${backendUrl}/api/recipes/${id}/ingredients`, {
+                const convertedQty = convertToBaseUnit(ing.quantity_needed, ing.display_unit || ing.unit || 'kg', ing.unit || 'kg');
+                await apiFetch(`${backendUrl}/api/recipes/${id}/ingredients`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ingredient_id: ing.ingredient_id, quantity_needed: convertedQty })
                 });
             }
@@ -113,7 +103,7 @@ export const useRecipes = (backendUrl, dispatch) => {
     const deleteRecipe = useCallback(async (id) => {
         try {
             setLoading(true);
-            await fetch(`${backendUrl}/api/recipes/${id}`, { method: 'DELETE' });
+            await apiFetch(`${backendUrl}/api/recipes/${id}`, { method: 'DELETE' });
             await fetchRecipes();
             return true;
         } catch (err) {
@@ -141,15 +131,9 @@ export const useRecipes = (backendUrl, dispatch) => {
     };
 
     return {
-        loading,
-        error,
-        fetchRecipes,
-        createRecipe,
-        updateRecipe,
-        deleteRecipe,
-        calculateCost,
-        calculateMargin,
-        calculateMaxPlates,
+        loading, error,
+        fetchRecipes, createRecipe, updateRecipe, deleteRecipe,
+        calculateCost, calculateMargin, calculateMaxPlates,
         clearError: () => setError(null)
     };
 };

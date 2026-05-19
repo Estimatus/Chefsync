@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { apiFetch } from '../utils/api';
 
 export const useIngredients = (backendUrl, dispatch) => {
     const [loading, setLoading] = useState(false);
@@ -7,7 +8,7 @@ export const useIngredients = (backendUrl, dispatch) => {
     const fetchIngredients = useCallback(async () => {
         try {
             setLoading(true);
-            const resp = await fetch(`${backendUrl}/api/ingredients`);
+            const resp = await apiFetch(`${backendUrl}/api/ingredients`);
             const data = await resp.json();
             dispatch({ type: 'set_ingredients', payload: data });
             return data;
@@ -22,13 +23,14 @@ export const useIngredients = (backendUrl, dispatch) => {
     const createIngredient = useCallback(async (ingredient) => {
         try {
             setLoading(true);
-            const resp = await fetch(`${backendUrl}/api/ingredients`, {
+            const resp = await apiFetch(`${backendUrl}/api/ingredients`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...ingredient,
                     cost_per_unit: parseFloat(ingredient.cost_per_unit) || 0,
-                    current_stock: parseFloat(ingredient.current_stock) || 0
+                    current_stock: parseFloat(ingredient.current_stock) || 0,
+                    min_stock: parseFloat(ingredient.min_stock) || 5,
+                    category: ingredient.category || 'General',
                 })
             });
             if (!resp.ok) throw new Error('Error al crear ingrediente');
@@ -45,14 +47,15 @@ export const useIngredients = (backendUrl, dispatch) => {
     const updateIngredient = useCallback(async (id, ingredient) => {
         try {
             setLoading(true);
-            const resp = await fetch(`${backendUrl}/api/ingredients/${id}`, {
+            const resp = await apiFetch(`${backendUrl}/api/ingredients/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name: ingredient.name,
                     unit: ingredient.unit,
                     cost_per_unit: parseFloat(ingredient.cost_per_unit) || 0,
                     current_stock: parseFloat(ingredient.current_stock) || 0,
+                    min_stock: parseFloat(ingredient.min_stock) || 5,
+                    category: ingredient.category || 'General',
                     supplier: ingredient.supplier || ''
                 })
             });
@@ -70,7 +73,7 @@ export const useIngredients = (backendUrl, dispatch) => {
     const deleteIngredient = useCallback(async (id) => {
         try {
             setLoading(true);
-            const resp = await fetch(`${backendUrl}/api/ingredients/${id}`, {
+            const resp = await apiFetch(`${backendUrl}/api/ingredients/${id}`, {
                 method: 'DELETE'
             });
             if (!resp.ok) throw new Error('Error al eliminar ingrediente');
@@ -86,7 +89,7 @@ export const useIngredients = (backendUrl, dispatch) => {
 
     const fetchLowStock = useCallback(async () => {
         try {
-            const resp = await fetch(`${backendUrl}/api/ingredients/low-stock`);
+            const resp = await apiFetch(`${backendUrl}/api/ingredients/low-stock`);
             const data = await resp.json();
             dispatch({ type: 'set_low_stock_alerts', payload: data });
             return data;
