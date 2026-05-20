@@ -1,8 +1,8 @@
-"""empty message
+"""initial with tenant
 
-Revision ID: 3e3112d3bd83
+Revision ID: 24c84f0ee5b2
 Revises: 
-Create Date: 2026-05-07 13:33:54.506102
+Create Date: 2026-05-19 01:39:59.989554
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '3e3112d3bd83'
+revision = '24c84f0ee5b2'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -38,12 +38,22 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
+    op.create_table('price_history',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('ingredient_id', sa.Integer(), nullable=False),
+    sa.Column('ingredient_name', sa.String(length=120), nullable=False),
+    sa.Column('old_price', sa.Float(), nullable=False),
+    sa.Column('new_price', sa.Float(), nullable=False),
+    sa.Column('changed_at', sa.String(length=50), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('recipe',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=120), nullable=False),
     sa.Column('description', sa.String(length=255), nullable=True),
     sa.Column('sale_price', sa.Float(), nullable=False),
     sa.Column('margin_threshold', sa.Float(), nullable=False),
+    sa.Column('category', sa.String(length=50), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
@@ -95,6 +105,7 @@ def downgrade():
     op.drop_table('order')
     op.drop_table('user')
     op.drop_table('recipe')
+    op.drop_table('price_history')
     op.drop_table('ingredient')
     op.drop_table('client')
     # ### end Alembic commands ###

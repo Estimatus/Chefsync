@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { apiFetch } from '../utils/api';
 
 export const useClients = (backendUrl, dispatch) => {
     const [loading, setLoading] = useState(false);
@@ -7,7 +8,7 @@ export const useClients = (backendUrl, dispatch) => {
     const fetchClients = useCallback(async () => {
         try {
             setLoading(true);
-            const resp = await fetch(`${backendUrl}/api/clients`);
+            const resp = await apiFetch(`${backendUrl}/api/clients`);
             const data = await resp.json();
             dispatch({ type: 'set_clients', payload: data });
             return data;
@@ -22,9 +23,8 @@ export const useClients = (backendUrl, dispatch) => {
     const createClient = useCallback(async (client) => {
         try {
             setLoading(true);
-            await fetch(`${backendUrl}/api/clients`, {
+            await apiFetch(`${backendUrl}/api/clients`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(client)
             });
             await fetchClients();
@@ -40,9 +40,8 @@ export const useClients = (backendUrl, dispatch) => {
     const updateClient = useCallback(async (id, client) => {
         try {
             setLoading(true);
-            await fetch(`${backendUrl}/api/clients/${id}`, {
+            await apiFetch(`${backendUrl}/api/clients/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(client)
             });
             await fetchClients();
@@ -58,7 +57,7 @@ export const useClients = (backendUrl, dispatch) => {
     const deleteClient = useCallback(async (id) => {
         try {
             setLoading(true);
-            await fetch(`${backendUrl}/api/clients/${id}`, { method: 'DELETE' });
+            await apiFetch(`${backendUrl}/api/clients/${id}`, { method: 'DELETE' });
             await fetchClients();
             return true;
         } catch (err) {
@@ -70,12 +69,8 @@ export const useClients = (backendUrl, dispatch) => {
     }, [backendUrl, fetchClients]);
 
     return {
-        loading,
-        error,
-        fetchClients,
-        createClient,
-        updateClient,
-        deleteClient,
+        loading, error,
+        fetchClients, createClient, updateClient, deleteClient,
         clearError: () => setError(null)
     };
 };
