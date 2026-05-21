@@ -6,36 +6,41 @@ export const NewRecipeModal = ({ show, onClose, newRecipe, setNewRecipe, ingredi
     return (
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content large" onClick={e => e.stopPropagation()}>
-                <h3>Nueva Receta</h3>
+                <h3>Nuevo Producto / Servicio</h3>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "20px" }}>
                     <div>
                         <label>Nombre *</label>
-                        <input value={newRecipe.name} onChange={e => setNewRecipe({...newRecipe, name: e.target.value})} placeholder="Nombre del producto" className="form-input"/>
+                        <input value={newRecipe.name} onChange={e => setNewRecipe({...newRecipe, name: e.target.value})} placeholder="Ej: Remera estampada, Torta, Servicio..." className="form-input"/>
                     </div>
                     <div>
-                        <label>Precio € *</label>
+                        <label>Precio *</label>
                         <input type="number" step="0.01" value={newRecipe.sale_price} onChange={e => setNewRecipe({...newRecipe, sale_price: e.target.value})} placeholder="0.00" className="form-input"/>
                     </div>
                     <div>
                         <label>Categoría</label>
-                        <select value={newRecipe.category || ''} onChange={e => setNewRecipe({...newRecipe, category: e.target.value})} className="form-input">
-                            <option value="">Sin categoría</option>
-                            <option value="Entrantes">Entrantes</option>
-                            <option value="Primeros">Primeros</option>
-                            <option value="Segundos">Segundos</option>
-                            <option value="Postres">Postres</option>
-                            <option value="Bebidas">Bebidas</option>
-                            <option value="Aperitivos">Aperitivos</option>
-                        </select>
+                        <input
+                            list="categorias-list"
+                            value={newRecipe.category || ''}
+                            onChange={e => setNewRecipe({...newRecipe, category: e.target.value})}
+                            placeholder="Ej: Remeras, Postres, Servicio..."
+                            className="form-input"
+                        />
+                        <datalist id="categorias-list">
+                            <option value="Producto principal"/>
+                            <option value="Complemento"/>
+                            <option value="Servicio"/>
+                            <option value="Paquete"/>
+                            <option value="Personalizado"/>
+                        </datalist>
                     </div>
                 </div>
 
                 <div style={{ borderTop: "1px solid var(--border)", paddingTop: "16px", marginBottom: "16px" }}>
-                    <label style={{ marginBottom: "10px" }}>Ingredientes / Materiales</label>
+                    <label style={{ marginBottom: "10px" }}>Insumos / Materiales</label>
                     <div style={{ display: "flex", gap: "8px", marginBottom: "14px" }}>
                         <select value={selectedIngToAdd} onChange={e => setSelectedIngToAdd(e.target.value)} className="form-input" style={{ flex: 1 }}>
-                            <option value="">Seleccionar ingrediente...</option>
+                            <option value="">Seleccionar insumo / material...</option>
                             <option value="new" style={{ color: "var(--accent)" }}>+ Crear nuevo</option>
                             {ingredients.map(ing => <option key={ing.id} value={ing.id}>{ing.name} ({ing.unit})</option>)}
                         </select>
@@ -44,7 +49,7 @@ export const NewRecipeModal = ({ show, onClose, newRecipe, setNewRecipe, ingredi
 
                     {newRecipeIngredients.length === 0 ? (
                         <div style={{ textAlign: "center", padding: "24px", color: "var(--muted)", fontSize: "13px", background: "var(--bg3)", borderRadius: "10px" }}>
-                            No hay ingredientes agregados
+                            No hay insumos agregados
                         </div>
                     ) : (
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "10px" }}>
@@ -81,7 +86,7 @@ export const NewRecipeModal = ({ show, onClose, newRecipe, setNewRecipe, ingredi
 
                 <div className="modal-actions">
                     <button onClick={onClose} className="btn-secondary">Cancelar</button>
-                    <button onClick={onSave} className="btn-primary">Guardar Receta</button>
+                    <button onClick={onSave} className="btn-primary">Guardar</button>
                 </div>
             </div>
         </div>
