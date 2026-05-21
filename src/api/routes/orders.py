@@ -1,55 +1,53 @@
-"""
-Ruta base de orders.
-Endpoints:
-- GET /api/orders - Listar todos
-- POST /api/orders - Crear uno
-"""
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
 from api.models import db, Order, OrderItem
 from api.socket_instance import get_socketio
+from datetime import datetime
 
 orders_bp = Blueprint('orders', __name__)
 
+def get_tenant_id(request):
+    return request.headers.get('X-Tenant-ID', type=int)
+
 @orders_bp.route('', methods=['GET'])
 def get_orders():
-    """ listar todos los pedidos """
-    orders = Order.query.all()
-    return jsonify([o.serialize() for o in orders]), 200
+    tenant_id = get_tenant_id(request)
+    query = Order.query
+    if tenant_id:
+        query = query.filter_by(tenant_id=tenant_id)
+    return jsonify([o.serialize() for o in query.all()]), 200
 
 @orders_bp.route('', methods=['POST'])
 def create_order():
-    """ crear un nuevo pedido """
     data = request.json
-    
+    tenant_id = get_tenant_id(request)
+
     if not data.get('client_id') or not data.get('delivery_date'):
         return jsonify({'error': 'client_id y delivery_date son obligatorios'}), 400
-    
+
     order = Order(
+        tenant_id=tenant_id,
         client_id=data['client_id'],
         delivery_date=data['delivery_date'],
         status=data.get('status', 'pending'),
         notes=data.get('notes'),
-        created_at=data.get('created_at', '2026-05-07')
+        created_at=str(datetime.now().strftime('%Y-%m-%d'))
     )
-    
     db.session.add(order)
     db.session.commit()
-    
-    # Emitir evento de nuevo pedido a todos los clientes conectados
+
     try:
         sio = get_socketio()
         if sio:
             sio.emit('new_order', order.serialize(), to='/')
     except Exception as e:
         print(f"WebSocket emit error: {e}")
-    
+
     return jsonify(order.serialize()), 201
 
 @orders_bp.route('/<int:id>', methods=['GET'])
 @cross_origin()
 def get_order(id):
-    """ obtener un pedido por id """
     order = Order.query.get(id)
     if not order:
         return jsonify({'error': 'Pedido no encontrado'}), 404
@@ -58,102 +56,85 @@ def get_order(id):
 @orders_bp.route('/<int:id>', methods=['PUT'])
 @cross_origin()
 def update_order(id):
-    """ actualizar un pedido """
     order = Order.query.get(id)
     if not order:
         return jsonify({'error': 'Pedido no encontrado'}), 404
-    
+
     data = request.json
     if 'delivery_date' in data: order.delivery_date = data['delivery_date']
     if 'status' in data: order.status = data['status']
     if 'notes' in data: order.notes = data['notes']
-    
+
     db.session.commit()
-    # Emitir evento de actualización de pedido
+
     try:
         sio = get_socketio()
         if sio:
             sio.emit('order_update', order.serialize(), to='/')
     except Exception as e:
         print(f"WebSocket emit error: {e}")
+
     return jsonify(order.serialize()), 200
 
 @orders_bp.route('/<int:id>', methods=['DELETE'])
 def delete_order(id):
-    """ eliminar un pedido """
     order = Order.query.get(id)
     if not order:
         return jsonify({'error': 'Pedido no encontrado'}), 404
-    
     order.status = 'cancelled'
     db.session.commit()
     return jsonify({'message': 'Pedido cancelado'}), 200
 
 @orders_bp.route('/<int:id>/items', methods=['POST'])
 def add_item_to_order(id):
-    """ añadir un item a un pedido """
     order = Order.query.get(id)
     if not order:
         return jsonify({'error': 'Pedido no encontrado'}), 404
-    
+
     data = request.json
     if not data.get('recipe_id') or not data.get('quantity'):
         return jsonify({'error': 'recipe_id y quantity son obligatorios'}), 400
-    
+
     item = OrderItem(
         order_id=id,
         recipe_id=data['recipe_id'],
         quantity=int(data['quantity'])
     )
-    
     db.session.add(item)
     db.session.commit()
-    
     return jsonify(item.serialize()), 201
 
 @orders_bp.route('/<int:id>/items/<int:item_id>', methods=['DELETE'])
 def remove_item_from_order(id, item_id):
-    """ eliminar un item de un pedido """
     item = OrderItem.query.filter_by(id=item_id, order_id=id).first()
     if not item:
         return jsonify({'error': 'Item no encontrado'}), 404
-    
     db.session.delete(item)
     db.session.commit()
-    
     return jsonify({'message': 'Item eliminado'}), 200
 
 @orders_bp.route('/<int:id>/items/<int:item_id>', methods=['PUT'])
 def update_item_in_order(id, item_id):
-    """ actualizar la cantidad de un item en un pedido """
     item = OrderItem.query.filter_by(id=item_id, order_id=id).first()
     if not item:
         return jsonify({'error': 'Item no encontrado'}), 404
-    
     data = request.json
     if 'quantity' in data:
         item.quantity = int(data['quantity'])
-    
     db.session.commit()
     return jsonify(item.serialize()), 200
 
 @orders_bp.route('/<int:id>/production', methods=['PUT'])
 def mark_order_in_production(id):
-    """
-    Marcar pedido como 'en producción'.
-    Aquí es donde ocurre la MAGIA: al marcar en producción,
-    se descuenta automáticamente el inventario.
-    """
     order = Order.query.get(id)
     if not order:
         return jsonify({'error': 'Pedido no encontrado'}), 404
 
-    from api.models import Recipe, Ingredient, RecipeIngredient
+    from api.models import Recipe, Ingredient
     from api.socket_utils import emit_stock_alert
 
     errors = []
     low_stock_alerts = []
-    LOW_STOCK_THRESHOLD = 5
 
     for item in order.items:
         recipe = Recipe.query.get(item.recipe_id)
@@ -171,7 +152,8 @@ def mark_order_in_production(id):
 
             ingredient.current_stock -= total_needed
 
-            if ingredient.current_stock < LOW_STOCK_THRESHOLD:
+            # Usar min_stock personalizado en lugar de hardcoded 5
+            if ingredient.current_stock < ingredient.min_stock:
                 low_stock_alerts.append(ingredient.serialize())
 
     if errors:
