@@ -1,0 +1,205 @@
+/* Responsive */
+@media (max-width: 1200px) {
+    .dashboard .metrics-grid,
+    .dashboard .stats-grid,
+    .dashboard .charts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard .stat-card.full-width,
+    .dashboard .chart-card.full-width {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard {
+        position: relative;
+    }
+
+    .dashboard .sidebar {
+        transform: translateX(-100%);
+        width: var(--sidebar-width);
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 1000;
+        transition: transform 0.3s ease;
+    }
+
+    .dashboard .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .dashboard .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+
+    .dashboard .sidebar-overlay.show {
+        display: block;
+    }
+
+    .dashboard .main-content {
+        margin-left: 0;
+        padding: 15px;
+        padding-top: 60px;
+    }
+
+    .dashboard .main-content h2 {
+        margin-bottom: 15px;
+        font-size: 20px;
+    }
+
+    .dashboard .mobile-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 50px;
+        background: var(--bg-sidebar);
+        padding: 0 15px;
+        z-index: 998;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .dashboard .mobile-header h1 {
+        color: var(--text-white);
+        margin: 0;
+        font-size: 16px;
+    }
+
+    .dashboard .mobile-menu-btn {
+        background: none;
+        border: none;
+        color: var(--text-white);
+        font-size: 20px;
+        cursor: pointer;
+        padding: 5px;
+    }
+
+    .dashboard .metrics-grid,
+    .dashboard .stats-grid,
+    .dashboard .charts-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .dashboard .metric-card {
+        padding: 15px;
+    }
+
+    .dashboard .metric-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+
+    .dashboard .metric-info h3 {
+        font-size: 22px;
+    }
+
+    .dashboard .stat-card {
+        padding: 15px;
+    }
+
+    .dashboard .stat-card h3 {
+        font-size: 24px;
+    }
+
+    .dashboard .table-dark {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .dashboard .table-dark th,
+    .dashboard .table-dark td {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .dashboard .form-input,
+    .dashboard .form-select {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .dashboard .btn-primary,
+    .dashboard .btn-secondary,
+    .dashboard .btn-danger {
+        padding: 8px 15px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard .main-content {
+        padding: 10px;
+        padding-top: 55px;
+    }
+
+    .dashboard .mobile-header {
+        height: 45px;
+        padding: 0 10px;
+    }
+
+    .dashboard .mobile-header h1 {
+        font-size: 14px;
+    }
+
+    .dashboard .metric-info h3 {
+        font-size: 18px;
+    }
+
+    .dashboard .metric-info p {
+        font-size: 11px;
+    }
+
+    .dashboard .stat-card h3 {
+        font-size: 20px;
+    }
+
+    .dashboard .stat-card h4 {
+        font-size: 11px;
+    }
+}
+
+/* Charts Grid */
+.dashboard .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.dashboard .chart-card {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: var(--radius-lg);
+}
+
+.dashboard .chart-card.full-width {
+    grid-column: span 2;
+}
+
+.dashboard .chart-card h4 {
+    color: var(--text-gray);
+    margin: 0 0 15px 0;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+/* Hide elements on mobile */
+.dashboard .sidebar-header > div > span.badge {
+    display: none;
+}

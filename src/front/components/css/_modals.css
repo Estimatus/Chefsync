@@ -1,0 +1,154 @@
+/* Modal Overlay */
+.dashboard .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: var(--z-modal);
+    overflow-y: auto;
+}
+
+.dashboard .modal-content {
+    background-color: var(--bg-card);
+    padding: 40px;
+    border-radius: var(--radius-lg);
+    max-width: 700px;
+    width: 90%;
+    color: var(--text-white);
+}
+
+.dashboard .modal-content.small {
+    max-width: 500px;
+    padding: 30px;
+}
+
+/* Modal Grid */
+.dashboard .modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.dashboard .form-group {
+    margin-bottom: 15px;
+}
+
+.dashboard .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--text-gray);
+}
+
+.dashboard .form-group.full-width {
+    grid-column: span 2;
+}
+
+/* Modal Actions */
+.dashboard .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.dashboard .modal-actions.center {
+    justify-content: center;
+}
+
+/* Recipe Card */
+.dashboard .recipe-card {
+    background-color: var(--accent-success);
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.dashboard .recipe-card span {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Recipe Details */
+.dashboard .recipe-details {
+    margin-bottom: 20px;
+}
+
+.dashboard .recipe-details .highlight {
+    color: var(--accent-warning);
+}
+
+.dashboard .recipe-details .success {
+    color: var(--accent-success);
+}
+
+.dashboard .recipe-details .danger {
+    color: var(--accent-danger);
+}
+
+/* Calculator */
+.dashboard .calculator-input {
+    padding: 10px;
+    border-radius: var(--radius-md);
+    border: none;
+    background-color: var(--bg-input);
+    color: var(--text-white);
+    width: 100px;
+}
+
+/* Order Status */
+.dashboard .status-select {
+    padding: 5px;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-white);
+}
+
+.dashboard .status-select.pending { background-color: var(--accent-warning); }
+.dashboard .status-select.in_production { background-color: var(--accent-primary); }
+.dashboard .status-select.completed { background-color: var(--accent-success); }
+.dashboard .status-select.sent { background-color: var(--accent-purple); }
+
+/* Recipe Link */
+.dashboard .recipe-link {
+    cursor: pointer;
+    color: var(--accent-warning);
+}
+
+/* Input Small */
+.dashboard .input-small {
+    width: 80px;
+    padding: 10px;
+    background-color: var(--bg-input);
+    border: none;
+    color: var(--text-white);
+}
+
+/* Flex Utilities */
+.dashboard .flex-wrap {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.dashboard .flex-1 {
+    flex: 1;
+    min-width: 200px;
+}
+
+.dashboard .flex-center {
+    align-self: center;
+}
+
+/* Divider */
+.dashboard hr {
+    width: 100%;
+    border-color: var(--border-color);
+}
