@@ -1,11 +1,26 @@
+// =============================================================================
+// ARCHIVO: RecipeViewModal.jsx
+// DESCRIPCIÓN: Modal para ver y editar recetas.
+// Modo visualización y modo edición con gestión de ingredientes.
+// =============================================================================
+
 import React from "react";
 
+// =============================================================================
+// COMPONENTE: RecipeViewModal
+// =============================================================================
+// Modal completo para ver/editar receta.
+// Props: show, recipe, editMode, setEditMode, editRecipe, setEditRecipe,
+//        editIngredients, setEditIngredients, selectedIngToEdit, setSelectedIngToEdit,
+//        store, onClose, onEditIngredient, onRemoveChecked, onAddIngredient, onSave
+// =============================================================================
 export const RecipeViewModal = ({ show, recipe, editMode, setEditMode, editRecipe, setEditRecipe, editIngredients, setEditIngredients, selectedIngToEdit, setSelectedIngToEdit, store, onClose, onEditIngredient, onRemoveChecked, onAddIngredient, onSave }) => {
     if (!show || !recipe) return null;
 
     return (
         <div style={{position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.9)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 99999, overflowY: 'auto'}} onClick={onClose}>
             <div className="modal-content" onClick={e => e.stopPropagation()}>
+                {/* MODO VISUALIZACIÓN */}
                 {!editMode ? (
                     <>
                         <h2>{recipe.name}</h2>
@@ -30,6 +45,7 @@ export const RecipeViewModal = ({ show, recipe, editMode, setEditMode, editRecip
                         </div>
                     </>
                 ) : (
+                    /* MODO EDICIÓN */
                     <>
                         <h2>Editar Receta</h2>
                         <div className="modal-grid">
@@ -49,6 +65,7 @@ export const RecipeViewModal = ({ show, recipe, editMode, setEditMode, editRecip
                         </div>
                         <hr/>
                         <h4><i className="fas fa-carrot me-2"></i>Ingredientes</h4>
+                        {/* Lista de ingredientes editables */}
                         {editIngredients.length > 0 ? (
                             <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px', marginBottom: '15px'}}>
                                 {editIngredients.map((ing) => (
@@ -74,6 +91,7 @@ export const RecipeViewModal = ({ show, recipe, editMode, setEditMode, editRecip
                                 <p style={{margin: 0}}>No hay ingredientes</p>
                             </div>
                         )}
+                        {/* Botón para eliminar ingredientes marcados */}
                         {editIngredients.some(ing => ing.checked) && <button onClick={onRemoveChecked} style={{backgroundColor: '#ef4444', border: 'none', padding: '8px 15px', borderRadius: '5px', color: 'white', marginBottom: '15px'}}><i className="fas fa-trash me-1"></i>Eliminar marcados</button>}
                         <hr/>
                         <h5><i className="fas fa-plus me-2"></i>Agregar ingrediente</h5>

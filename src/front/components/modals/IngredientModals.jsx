@@ -1,5 +1,17 @@
+// =============================================================================
+// ARCHIVO: IngredientModals.jsx
+// DESCRIPCIÓN: Modales para gestión de ingredientes.
+// Incluye: NewIngredientModal, EditIngredientModal
+// =============================================================================
+
 import React from "react";
 
+// =============================================================================
+// SUB-COMPONENTE: ModalWrapper
+// =============================================================================
+// Wrapper reutilizable para modales.
+// Props: onClose, children, size
+// =============================================================================
 const ModalWrapper = ({ onClose, children, size = "small" }) => (
     <div className="modal-overlay" onClick={onClose}>
         <div className={`modal-content ${size}`} onClick={e => e.stopPropagation()}>
@@ -8,6 +20,12 @@ const ModalWrapper = ({ onClose, children, size = "small" }) => (
     </div>
 );
 
+// =============================================================================
+// COMPONENTE: NewIngredientModal
+// =============================================================================
+// Modal para crear un nuevo ingrediente.
+// Props: show, onClose, newIngredient, setNewIngredient, onSave, ingredientSource
+// =============================================================================
 export const NewIngredientModal = ({ show, onClose, newIngredient, setNewIngredient, onSave, ingredientSource }) => {
     if (!show) return null;
     return (
@@ -59,6 +77,12 @@ export const NewIngredientModal = ({ show, onClose, newIngredient, setNewIngredi
     );
 };
 
+// =============================================================================
+// COMPONENTE: EditIngredientModal
+// =============================================================================
+// Modal para editar un ingrediente existente.
+// Props: show, ingredient, onClose, onSave
+// =============================================================================
 export const EditIngredientModal = ({ show, ingredient, onClose, onSave }) => {
     if (!show || !ingredient) return null;
     return (

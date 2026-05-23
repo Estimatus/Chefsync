@@ -1,10 +1,29 @@
+// =============================================================================
+// ARCHIVO: useIngredients.js
+// DESCRIPCIÓN: Hook de React para gestionar ingredientes.
+// Provee funciones para CRUD completo de ingredientes y fetch de stock bajo.
+// =============================================================================
+
 import { useState, useCallback } from 'react';
 import { apiFetch } from '../utils/api';
 
+// =============================================================================
+// HOOK: useIngredients
+// =============================================================================
+// Hook personalizado para operaciones con ingredientes.
+// Params: backendUrl (string) - URL base del backend, dispatch (function) - dispatch del store
+// Returns: Object con loading, error, y funciones CRUD
+// =============================================================================
 export const useIngredients = (backendUrl, dispatch) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
+    // =============================================================================
+    // FUNCIÓN: fetchIngredients
+    // =============================================================================
+    // Obtiene lista de ingredientes del backend y actualiza el store.
+    // Returns: Array de ingredientes o lanza error
+    // =============================================================================
     const fetchIngredients = useCallback(async () => {
         try {
             setLoading(true);
@@ -20,6 +39,13 @@ export const useIngredients = (backendUrl, dispatch) => {
         }
     }, [backendUrl, dispatch]);
 
+    // =============================================================================
+    // FUNCIÓN: createIngredient
+    // =============================================================================
+    // Crea un nuevo ingrediente. Si ya existe, suma al stock.
+    // Params: ingredient (Object) - datos del ingrediente
+    // Returns: boolean - true si éxito, false si error
+    // =============================================================================
     const createIngredient = useCallback(async (ingredient) => {
         try {
             setLoading(true);
@@ -44,6 +70,13 @@ export const useIngredients = (backendUrl, dispatch) => {
         }
     }, [backendUrl, fetchIngredients]);
 
+    // =============================================================================
+    // FUNCIÓN: updateIngredient
+    // =============================================================================
+    // Actualiza un ingrediente existente por ID.
+    // Params: id (int) - ID del ingrediente, ingredient (Object) - nuevos datos
+    // Returns: boolean - true si éxito, false si error
+    // =============================================================================
     const updateIngredient = useCallback(async (id, ingredient) => {
         try {
             setLoading(true);
@@ -70,6 +103,13 @@ export const useIngredients = (backendUrl, dispatch) => {
         }
     }, [backendUrl, fetchIngredients]);
 
+    // =============================================================================
+    // FUNCIÓN: deleteIngredient
+    // =============================================================================
+    // Elimina lógicamente un ingrediente (is_active = false).
+    // Params: id (int) - ID del ingrediente a eliminar
+    // Returns: boolean - true si éxito, false si error
+    // =============================================================================
     const deleteIngredient = useCallback(async (id) => {
         try {
             setLoading(true);
@@ -87,6 +127,12 @@ export const useIngredients = (backendUrl, dispatch) => {
         }
     }, [backendUrl, fetchIngredients]);
 
+    // =============================================================================
+    // FUNCIÓN: fetchLowStock
+    // =============================================================================
+    // Obtiene ingredientes con stock por debajo del mínimo.
+    // Returns: Array de ingredientes con stock bajo
+    // =============================================================================
     const fetchLowStock = useCallback(async () => {
         try {
             const resp = await apiFetch(`${backendUrl}/api/ingredients/low-stock`);

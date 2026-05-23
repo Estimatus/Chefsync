@@ -1,6 +1,13 @@
+// =============================================================================
+// ARCHIVO: Signup.jsx
+// DESCRIPCIÓN: Página de registro de usuarios.
+// Formulario de dos pasos: info del negocio y datos de cuenta.
+// =============================================================================
+
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
+// Estilos reutilizables para inputs
 const inputStyle = {
     width: "100%", background: "var(--bg3)",
     border: "1px solid var(--border)",
@@ -16,6 +23,7 @@ const labelStyle = {
     textTransform: "uppercase", letterSpacing: "0.06em"
 };
 
+// Tipos de negocio disponibles
 const BUSINESS_TYPES = [
     { value: "cocina", label: "🍳 Cocina / Dark Kitchen" },
     { value: "reposteria", label: "🎂 Repostería / Pastelería" },
@@ -27,6 +35,13 @@ const BUSINESS_TYPES = [
     { value: "general", label: "📦 Otro emprendimiento" },
 ];
 
+// =============================================================================
+// COMPONENTE: Signup
+// =============================================================================
+// Página de registro con flujo de dos pasos:
+// Step 1: Nombre y tipo de negocio
+// Step 2: Email, contraseña y confirmación
+// =============================================================================
 export const Signup = () => {
     const [step, setStep] = useState(1);
     const [form, setForm] = useState({
@@ -40,8 +55,10 @@ export const Signup = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    // Helper para actualizar campos
     const update = (field, value) => setForm(f => ({ ...f, [field]: value }));
 
+    // Avanzar al step 2
     const handleNext = () => {
         if (step === 1) {
             if (!form.businessName) return setError("El nombre del negocio es obligatorio");
@@ -51,59 +68,64 @@ export const Signup = () => {
         setStep(2);
     };
 
+    // =============================================================================
+    // FUNCIÓN: handleSubmit
+    // =============================================================================
+    // Registra usuario y tenant, luego hace auto-login.
+    // =============================================================================
     const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+        e.preventDefault();
+        setError("");
 
-    if (!form.email || !form.password) return setError("Email y contraseña son obligatorios");
-    if (form.password !== form.confirmPassword) return setError("Las contraseñas no coinciden");
-    if (form.password.length < 6) return setError("La contraseña debe tener al menos 6 caracteres");
+        if (!form.email || !form.password) return setError("Email y contraseña son obligatorios");
+        if (form.password !== form.confirmPassword) return setError("Las contraseñas no coinciden");
+        if (form.password.length < 6) return setError("La contraseña debe tener al menos 6 caracteres");
 
-    setLoading(true);
-    try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
+        setLoading(true);
+        try {
+            const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-        // 1. Crear usuario y tenant
-        const response = await fetch(`${backendUrl}/api/users`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                email: form.email,
-                password: form.password,
-                business_name: form.businessName,
-                business_type: form.businessType,
-                role: "admin",
-            })
-        });
-        const data = await response.json();
+            // 1. Crear usuario y tenant
+            const response = await fetch(`${backendUrl}/api/users`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: form.email,
+                    password: form.password,
+                    business_name: form.businessName,
+                    business_type: form.businessType,
+                    role: "admin",
+                })
+            });
+            const data = await response.json();
 
-        if (!response.ok) {
-            return setError(data.error || "Error al crear la cuenta");
+            if (!response.ok) {
+                return setError(data.error || "Error al crear la cuenta");
+            }
+
+            // 2. Auto login
+            const loginResp = await fetch(`${backendUrl}/api/users/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: form.email, password: form.password })
+            });
+            const loginData = await loginResp.json();
+
+            if (loginResp.ok) {
+                // 3. Limpiar localStorage y guardar nuevo usuario
+                localStorage.clear();
+                localStorage.setItem("user", JSON.stringify(loginData.user));
+                // 4. Forzar recarga para limpiar el store
+                window.location.href = "/admin";
+            } else {
+                navigate("/login");
+            }
+        } catch (err) {
+            setError("No se pudo conectar con el servidor");
+        } finally {
+            setLoading(false);
         }
-
-        // 2. Auto login
-        const loginResp = await fetch(`${backendUrl}/api/users/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: form.email, password: form.password })
-        });
-        const loginData = await loginResp.json();
-
-        if (loginResp.ok) {
-            // 3. Limpiar localStorage completamente antes de guardar el nuevo usuario
-            localStorage.clear();
-            localStorage.setItem("user", JSON.stringify(loginData.user));
-            // 4. Forzar recarga completa para limpiar el store
-            window.location.href = "/admin";
-        } else {
-            navigate("/login");
-        }
-    } catch (err) {
-        setError("No se pudo conectar con el servidor");
-    } finally {
-        setLoading(false);
-    }
-};
+    };
 
     return (
         <div style={{
@@ -111,11 +133,13 @@ export const Signup = () => {
             display: "flex", alignItems: "center", justifyContent: "center",
             fontFamily: "var(--font-body)", position: "relative", overflow: "hidden",
         }}>
+            {/* Fondo decorativo */}
             <div style={{
                 position: "absolute", inset: 0, zIndex: 0,
                 background: "radial-gradient(ellipse at 20% 50%, rgba(108,99,255,0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(200,240,96,0.06) 0%, transparent 50%)",
             }} />
 
+            {/* Tarjeta del formulario */}
             <div style={{
                 position: "relative", zIndex: 1,
                 width: "100%", maxWidth: step === 1 ? "520px" : "400px",
@@ -145,7 +169,7 @@ export const Signup = () => {
                     </div>
                 </div>
 
-                {/* Progress */}
+                {/* Indicador de progreso */}
                 <div style={{ display: "flex", gap: "6px", marginBottom: "28px" }}>
                     {[1, 2].map(s => (
                         <div key={s} style={{
@@ -156,7 +180,7 @@ export const Signup = () => {
                     ))}
                 </div>
 
-                {/* Error */}
+                {/* Mensaje de error */}
                 {error && (
                     <div style={{
                         background: "rgba(255,107,107,0.1)", border: "1px solid rgba(255,107,107,0.3)",
@@ -167,7 +191,7 @@ export const Signup = () => {
                     </div>
                 )}
 
-                {/* Step 1 — Tipo de negocio */}
+                {/* STEP 1 — Tipo de negocio */}
                 {step === 1 && (
                     <div>
                         <div style={{ marginBottom: "20px" }}>
@@ -223,7 +247,7 @@ export const Signup = () => {
                     </div>
                 )}
 
-                {/* Step 2 — Cuenta */}
+                {/* STEP 2 — Cuenta */}
                 {step === 2 && (
                     <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                         <div>

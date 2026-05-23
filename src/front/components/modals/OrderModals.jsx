@@ -1,5 +1,17 @@
+// =============================================================================
+// ARCHIVO: OrderModals.jsx
+// DESCRIPCIÓN: Modales para gestión de pedidos.
+// Incluye: NewOrderModal, EditOrderModal, DeleteConfirmModal, ProductionConfirmModal
+// =============================================================================
+
 import React from "react";
 
+// =============================================================================
+// SUB-COMPONENTE: ModalWrapper
+// =============================================================================
+// Wrapper reutilizable para modales.
+// Props: onClose, children, size
+// =============================================================================
 const ModalWrapper = ({ onClose, children, size = "" }) => (
     <div className="modal-overlay" onClick={onClose}>
         <div className={`modal-content ${size}`} onClick={e => e.stopPropagation()}>
@@ -8,6 +20,12 @@ const ModalWrapper = ({ onClose, children, size = "" }) => (
     </div>
 );
 
+// =============================================================================
+// SUB-COMPONENTE: FormField
+// =============================================================================
+// Wrapper para campo de formulario con label.
+// Props: label, children
+// =============================================================================
 const FormField = ({ label, children }) => (
     <div style={{ marginBottom: "16px" }}>
         <label>{label}</label>
@@ -15,6 +33,14 @@ const FormField = ({ label, children }) => (
     </div>
 );
 
+// =============================================================================
+// COMPONENTE: NewOrderModal
+// =============================================================================
+// Modal para crear un nuevo pedido.
+// Props: show, onClose, newOrder, setNewOrder, newOrderItems, setNewOrderItems,
+//        selectedRecipe, setSelectedRecipe, orderItemQty, setOrderItemQty,
+//        store, onAddItem, onSave
+// =============================================================================
 export const NewOrderModal = ({ show, onClose, newOrder, setNewOrder, newOrderItems, setNewOrderItems, selectedRecipe, setSelectedRecipe, orderItemQty, setOrderItemQty, store, onAddItem, onSave }) => {
     if (!show) return null;
     return (
@@ -43,6 +69,7 @@ export const NewOrderModal = ({ show, onClose, newOrder, setNewOrder, newOrderIt
                 />
             </FormField>
 
+            {/* Sección de items del pedido */}
             <div style={{ borderTop: "1px solid var(--border)", paddingTop: "16px", marginBottom: "16px" }}>
                 <label style={{ marginBottom: "10px" }}>Productos</label>
                 <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
@@ -58,6 +85,7 @@ export const NewOrderModal = ({ show, onClose, newOrder, setNewOrder, newOrderIt
                     <button onClick={onAddItem} className="btn-primary" style={{ whiteSpace: "nowrap" }}>+ Agregar</button>
                 </div>
 
+                {/* Lista de items agregados */}
                 {newOrderItems.length > 0 && (
                     <div style={{ background: "var(--bg3)", borderRadius: "10px", overflow: "hidden" }}>
                         {newOrderItems.map((item, i) => (
@@ -81,6 +109,14 @@ export const NewOrderModal = ({ show, onClose, newOrder, setNewOrder, newOrderIt
     );
 };
 
+// =============================================================================
+// COMPONENTE: EditOrderModal
+// =============================================================================
+// Modal para editar un pedido existente.
+// Props: show, onClose, order, setOrder, editOrderItems, setEditOrderItems,
+//        selectedRecipe, setSelectedRecipe, orderItemQty, setOrderItemQty,
+//        store, onAddItem, onSave
+// =============================================================================
 export const EditOrderModal = ({ show, onClose, order, setOrder, editOrderItems, setEditOrderItems, selectedRecipe, setSelectedRecipe, orderItemQty, setOrderItemQty, store, onAddItem, onSave }) => {
     if (!show || !order) return null;
     return (
@@ -96,6 +132,7 @@ export const EditOrderModal = ({ show, onClose, order, setOrder, editOrderItems,
                 </FormField>
             </div>
 
+            {/* Sección de items del pedido */}
             <div style={{ borderTop: "1px solid var(--border)", paddingTop: "16px", marginBottom: "16px" }}>
                 <label style={{ marginBottom: "10px" }}>Productos</label>
                 <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
@@ -107,6 +144,7 @@ export const EditOrderModal = ({ show, onClose, order, setOrder, editOrderItems,
                     <button onClick={onAddItem} className="btn-primary" style={{ whiteSpace: "nowrap" }}>+ Agregar</button>
                 </div>
 
+                {/* Lista de items */}
                 {editOrderItems.length > 0 && (
                     <div style={{ background: "var(--bg3)", borderRadius: "10px", overflow: "hidden" }}>
                         {editOrderItems.map((item, i) => (
@@ -130,6 +168,12 @@ export const EditOrderModal = ({ show, onClose, order, setOrder, editOrderItems,
     );
 };
 
+// =============================================================================
+// COMPONENTE: DeleteConfirmModal
+// =============================================================================
+// Modal de confirmación para eliminar.
+// Props: show, onClose, onConfirm, title, message
+// =============================================================================
 export const DeleteConfirmModal = ({ show, onClose, onConfirm, title, message }) => {
     if (!show) return null;
     return (
@@ -147,6 +191,12 @@ export const DeleteConfirmModal = ({ show, onClose, onConfirm, title, message })
     );
 };
 
+// =============================================================================
+// COMPONENTE: ProductionConfirmModal
+// =============================================================================
+// Modal de confirmación para iniciar producción.
+// Props: show, onClose, onConfirm, orderId
+// =============================================================================
 export const ProductionConfirmModal = ({ show, onClose, onConfirm, orderId }) => {
     if (!show) return null;
     return (

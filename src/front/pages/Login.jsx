@@ -1,6 +1,18 @@
+// =============================================================================
+// ARCHIVO: Login.jsx
+// DESCRIPCIÓN: Página de inicio de sesión.
+// Autentica usuarios y redirige según rol (admin/chef).
+// =============================================================================
+
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
+// =============================================================================
+// COMPONENTE: Login
+// =============================================================================
+// Página de login con formulario de email y contraseña.
+// Valida credenciales contra el backend y guarda usuario en localStorage.
+// =============================================================================
 export const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -8,6 +20,11 @@ export const Login = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    // =============================================================================
+    // FUNCIÓN: handleSubmit
+    // =============================================================================
+    // Envía credenciales al backend y maneja respuesta.
+    // =============================================================================
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
@@ -44,11 +61,13 @@ export const Login = () => {
             position: "relative",
             overflow: "hidden",
         }}>
+            {/* Fondo con gradientes decorativos */}
             <div style={{
                 position: "absolute", inset: 0, zIndex: 0,
                 background: "radial-gradient(ellipse at 20% 50%, rgba(108,99,255,0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(200,240,96,0.06) 0%, transparent 50%)",
             }} />
 
+            {/* Tarjeta de login */}
             <div style={{
                 position: "relative", zIndex: 1,
                 width: "100%", maxWidth: "400px",
@@ -82,7 +101,7 @@ export const Login = () => {
                     </div>
                 </div>
 
-                {/* Error */}
+                {/* Mensaje de error */}
                 {error && (
                     <div style={{
                         background: "rgba(255,107,107,0.1)",
@@ -100,7 +119,7 @@ export const Login = () => {
                     </div>
                 )}
 
-                {/* Form */}
+                {/* Formulario */}
                 <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                     <div>
                         <label style={{
@@ -175,7 +194,7 @@ export const Login = () => {
                     </button>
                 </form>
 
-                {/* Footer */}
+                {/* Footer con enlaces */}
                 <div style={{ textAlign: "center", marginTop: "24px" }}>
                     <a href="/" style={{ fontSize: "12px", color: "var(--muted)", textDecoration: "none", display: "block", marginBottom: "8px" }}>
                         ← Volver al inicio

@@ -1,14 +1,37 @@
+# =============================================================================
+# ARCHIVO: users.py
+# DESCRIPCIÓN: Rutas API para gestión de usuarios y autenticación.
+# Incluye registro, login y CRUD de usuarios.
+# Al registrar crea automáticamente el tenant (empresa) asociado.
+# =============================================================================
+
 from flask import Blueprint, request, jsonify
 from api.models import db, User, Tenant
 from datetime import datetime
 
+# Blueprint para rutas de usuarios
 users_bp = Blueprint('users', __name__)
 
+# =============================================================================
+# GET /api/users
+# =============================================================================
+# Lista todos los usuarios activos.
+# Returns: JSON array de usuarios serializados (sin passwords)
+# =============================================================================
 @users_bp.route('', methods=['GET'])
 def get_users():
     users = User.query.filter_by(is_active=True).all()
     return jsonify([u.serialize() for u in users]), 200
 
+# =============================================================================
+# POST /api/users
+# =============================================================================
+# Registra un nuevo usuario y crea su tenant automáticamente.
+# Body: email (str, requerido), password (str, requerido),
+#       business_name (str, opcional), business_type (str, opcional),
+#       role (str, opcional, default 'admin')
+# Returns: JSON usuario creado con tenant info
+# =============================================================================
 @users_bp.route('', methods=['POST'])
 def create_user():
     data = request.json
@@ -42,6 +65,13 @@ def create_user():
     db.session.commit()
     return jsonify(user.serialize()), 201
 
+# =============================================================================
+# GET /api/users/<id>
+# =============================================================================
+# Obtiene un usuario específico por su ID.
+# Params: id (int) - ID del usuario
+# Returns: JSON usuario o error 404
+# =============================================================================
 @users_bp.route('/<int:id>', methods=['GET'])
 def get_user(id):
     user = User.query.get(id)
@@ -49,6 +79,14 @@ def get_user(id):
         return jsonify({'error': 'Usuario no encontrado'}), 404
     return jsonify(user.serialize()), 200
 
+# =============================================================================
+# PUT /api/users/<id>
+# =============================================================================
+# Actualiza un usuario existente.
+# Params: id (int) - ID del usuario
+# Body: email, password, role (todos opcionales)
+# Returns: JSON usuario actualizado
+# =============================================================================
 @users_bp.route('/<int:id>', methods=['PUT'])
 def update_user(id):
     user = User.query.get(id)
@@ -61,6 +99,13 @@ def update_user(id):
     db.session.commit()
     return jsonify(user.serialize()), 200
 
+# =============================================================================
+# DELETE /api/users/<id>
+# =============================================================================
+# Elimina lógicamente un usuario (is_active = false).
+# Params: id (int) - ID del usuario
+# Returns: JSON mensaje de confirmación
+# =============================================================================
 @users_bp.route('/<int:id>', methods=['DELETE'])
 def delete_user(id):
     user = User.query.get(id)
@@ -70,6 +115,13 @@ def delete_user(id):
     db.session.commit()
     return jsonify({'message': 'Usuario eliminado'}), 200
 
+# =============================================================================
+# POST /api/users/login
+# =============================================================================
+# Autentica un usuario y devuelve info del tenant.
+# Body: email (str, requerido), password (str, requerido)
+# Returns: JSON con mensaje de éxito y objeto user con tenant info
+# =============================================================================
 @users_bp.route('/login', methods=['POST'])
 def login():
     data = request.json
