@@ -8,6 +8,7 @@ from api.routes.clients import clients_bp
 from api.routes.orders import orders_bp
 from api.routes.users import users_bp
 from api.routes.recipe_items import recipe_ingredients_bp
+from api.routes.transactions import transactions_bp
 
 api = Blueprint('api', __name__)
 
@@ -26,3 +27,4 @@ api.register_blueprint(clients_bp, url_prefix='/clients')
 api.register_blueprint(orders_bp, url_prefix='/orders')
 api.register_blueprint(users_bp, url_prefix='/users')
 api.register_blueprint(recipe_ingredients_bp, url_prefix='/recipe-items')
+api.register_blueprint(transactions_bp, url_prefix='/transactions')

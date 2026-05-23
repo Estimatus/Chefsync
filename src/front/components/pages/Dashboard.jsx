@@ -15,6 +15,7 @@ import { OrdersPanel } from "../panels/OrdersPanel.jsx";
 import { ClientsPanel } from "../panels/ClientsPanel.jsx";
 import { OverviewPanel } from "../panels/OverviewPanel.jsx";
 import { StatsPanel } from "../panels/StatsPanel.jsx";
+import { FinanzasPanel } from "../panels/FinanzasPanel.jsx";
 import { NewOrderModal, DeleteConfirmModal, ProductionConfirmModal, EditOrderModal } from "../modals/OrderModals.jsx";
 import { NewIngredientModal, EditIngredientModal } from "../modals/IngredientModals.jsx";
 import { NewClientModal, ConfirmModal } from "../modals/ClientModals.jsx";
@@ -540,6 +541,7 @@ export const Dashboard = () => {
                         {activeTab === "recipes" && "Recetas"}
                         {activeTab === "orders" && "Pedidos"}
                         {activeTab === "clients" && "Clientes"}
+                        {activeTab === "finanzas" && "Finanzas"}
                         {activeTab === "stats" && "Estadísticas"}
                     </h2>
 
@@ -590,6 +592,10 @@ export const Dashboard = () => {
                             onNewClient={() => setShowNewClient(true)}
                             onExport={exportClients}
                         />
+                    )}
+
+                    {activeTab === "finanzas" && (
+                        <FinanzasPanel backendUrl={backendUrl} />
                     )}
 
                     {activeTab === "stats" && (

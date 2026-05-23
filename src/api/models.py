@@ -22,6 +22,7 @@ class Tenant(db.Model):
     recipes: Mapped[List["Recipe"]] = relationship(back_populates="tenant")
     clients: Mapped[List["Client"]] = relationship(back_populates="tenant")
     orders: Mapped[List["Order"]] = relationship(back_populates="tenant")
+    transactions: Mapped[List["Transaction"]] = relationship(back_populates="tenant")
 
     def serialize(self):
         return {
@@ -266,4 +267,43 @@ class OrderItem(db.Model):
             "recipe_price": self.recipe.sale_price,
             "recipe_cost": self.recipe.ingredients_cost if hasattr(self.recipe, "ingredients_cost") else 0,
             "quantity": self.quantity,
+        }
+
+
+# =============================================================================
+# MODELO: Transaction (Movimiento de Caja)
+# Registra ingresos y gastos del negocio.
+# type: "income" (dinero que entra) | "expense" (dinero que sale)
+# =============================================================================
+class Transaction(db.Model):
+    __tablename__ = "transaction"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[Optional[int]] = mapped_column(ForeignKey("tenant.id"), nullable=True)
+    # Tipo: "income" (ingreso) o "expense" (gasto)
+    type: Mapped[str] = mapped_column(String(20), nullable=False)
+    # Monto en número (ej: 150.50)
+    amount: Mapped[float] = mapped_column(Float, nullable=False)
+    # Categoría: "Ventas", "Materiales", "Renta", etc.
+    category: Mapped[str] = mapped_column(String(80), nullable=True, default="General")
+    # Descripción opcional
+    description: Mapped[str] = mapped_column(String(255), nullable=True)
+    # Fecha del movimiento (YYYY-MM-DD)
+    date: Mapped[str] = mapped_column(String(20), nullable=False)
+    # Timestamp de creación en la BD
+    created_at: Mapped[str] = mapped_column(String(30), nullable=True)
+
+    # Relación con Tenant
+    tenant: Mapped[Optional["Tenant"]] = relationship("Tenant", back_populates="transactions")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "tenant_id": self.tenant_id,
+            "type": self.type,
+            "amount": self.amount,
+            "category": self.category,
+            "description": self.description,
+            "date": self.date,
+            "created_at": self.created_at,
         }
