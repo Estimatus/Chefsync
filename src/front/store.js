@@ -1,16 +1,3 @@
-// =============================================================================
-// ARCHIVO: store.js
-// DESCRIPCIÓN: Estado global de la aplicación y reducer para el store.
-// Gestiona usuario, tenant, ingredientes, recetas, pedidos, clientes y alertas.
-// Los datos persisten en localStorage.
-// =============================================================================
-
-// =============================================================================
-// FUNCIÓN: initialStore
-// =============================================================================
-// Inicializa el estado global cargando datos desde localStorage.
-// Returns: Object con estado inicial completo
-// =============================================================================
 export const initialStore = () => {
     let user = null;
     try {
@@ -20,7 +7,6 @@ export const initialStore = () => {
         console.error("Error parsing user from localStorage:", e);
     }
 
-    // Cargar gastos fijos desde localStorage
     let fixedExpenses = { enabled: false, rate: 0 };
     try {
         const savedFixedExpenses = localStorage.getItem("fixedExpenses");
@@ -48,20 +34,9 @@ export const initialStore = () => {
     }
 }
 
-// =============================================================================
-// FUNCIÓN: storeReducer
-// =============================================================================
-// Reducer central para actualizar el estado global.
-// Actions: set_user, set_tenant, set_message, set_ingredients,
-//          set_recipes, set_clients, set_orders, set_low_stock_alerts,
-//          set_margin_alerts, set_fixed_expenses
-// Params: store (Object) - estado actual, action (Object) - acción con type y payload
-// Returns: Object - nuevo estado
-// =============================================================================
 export default function storeReducer(store, action = {}) {
     switch (action.type) {
         case 'set_user':
-            // Guardar usuario en localStorage para persistencia
             if (action.payload) {
                 localStorage.setItem("user", JSON.stringify(action.payload));
             } else {
@@ -105,7 +80,6 @@ export default function storeReducer(store, action = {}) {
             };
 
         case 'set_fixed_expenses':
-            // Persistir gastos fijos en localStorage
             localStorage.setItem("fixedExpenses", JSON.stringify(action.payload));
             return {
                 ...store,

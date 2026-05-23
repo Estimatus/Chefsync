@@ -1,23 +1,6 @@
-// =============================================================================
-// ARCHIVO: DashboardSidebar.jsx
-// DESCRIPCIÓN: Componente de barra lateral del dashboard.
-// Navegación principal con badges de alertas y estado de conexión.
-// =============================================================================
-
 import React from "react";
 
-// =============================================================================
-// COMPONENTE: DashboardSidebar
-// =============================================================================
-// Sidebar con navegación principal y de negocio.
-// Muestra badges de alertas (pedidos pendientes, stock bajo, margen bajo).
-// Props: activeTab, setActiveTab, darkMode, toggleDarkMode, connected,
-//        isOnline, pendingCount, store, pendingOrders, isOpen, onClose
-// =============================================================================
 export const DashboardSidebar = ({ activeTab, setActiveTab, darkMode, toggleDarkMode, connected, isOnline, pendingCount, store, pendingOrders, isOpen, onClose }) => {
-    // =============================================================================
-    // NAVEGACIÓN PRINCIPAL - Secciones principales de la app
-    // =============================================================================
     const navMain = [
         {
             id: "overview",
@@ -28,27 +11,24 @@ export const DashboardSidebar = ({ activeTab, setActiveTab, darkMode, toggleDark
         {
             id: "orders",
             label: "Pedidos",
-            badge: pendingOrders > 0 ? pendingOrders : null,  // Badge con cantidad de pedidos pendientes
+            badge: pendingOrders > 0 ? pendingOrders : null,
             icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
         },
         {
             id: "recipes",
             label: "Catálogo",
-            badge: store.alerts?.marginAlerts?.length > 0 ? store.alerts.marginAlerts.length : null,  // Alertas de margen
+            badge: store.alerts?.marginAlerts?.length > 0 ? store.alerts.marginAlerts.length : null,
             icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.97-1.67L23 6H6"/></svg>
         },
         {
             id: "ingredients",
             label: "Inventario",
-            badge: store.alerts?.lowStock?.length > 0 ? store.alerts.lowStock.length : null,  // Alertas de stock bajo
+            badge: store.alerts?.lowStock?.length > 0 ? store.alerts.lowStock.length : null,
             badgeColor: "var(--accent3)",
             icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
         },
     ];
 
-    // =============================================================================
-    // NAVEGACIÓN DE NEGOCIO - Secciones de gestión empresarial
-    // =============================================================================
     const navBusiness = [
         {
             id: "clients",
@@ -70,11 +50,6 @@ export const DashboardSidebar = ({ activeTab, setActiveTab, darkMode, toggleDark
         },
     ];
 
-    // =============================================================================
-    // SUB-COMPONENTE: NavItem
-    // =============================================================================
-    // Renderiza un item de navegación con badge opcional.
-    // =============================================================================
     const NavItem = ({ item }) => {
         const isActive = activeTab === item.id;
         return (
@@ -93,7 +68,6 @@ export const DashboardSidebar = ({ activeTab, setActiveTab, darkMode, toggleDark
                 onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = "var(--bg3)"; e.currentTarget.style.color = "var(--text)"; }}}
                 onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--muted)"; }}}
             >
-                {/* Indicador lateral de activo */}
                 {isActive && (
                     <div style={{ position: "absolute", left: 0, top: "6px", bottom: "6px", width: "3px", background: "var(--accent)", borderRadius: "0 3px 3px 0" }} />
                 )}
@@ -101,7 +75,6 @@ export const DashboardSidebar = ({ activeTab, setActiveTab, darkMode, toggleDark
                     {item.icon}
                 </div>
                 {item.label}
-                {/* Badge de notificación */}
                 {item.badge && (
                     <div style={{ marginLeft: "auto", background: item.badgeColor || "var(--accent3)", color: "#fff", fontSize: "10px", fontWeight: 600, padding: "1px 6px", borderRadius: "10px" }}>
                         {item.badge}
@@ -113,7 +86,6 @@ export const DashboardSidebar = ({ activeTab, setActiveTab, darkMode, toggleDark
 
     return (
         <>
-            {/* Overlay para móvil */}
             {isOpen && (
                 <div onClick={onClose} style={{
                     position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)",
@@ -133,7 +105,7 @@ export const DashboardSidebar = ({ activeTab, setActiveTab, darkMode, toggleDark
                 transform: isOpen ? "translateX(0)" : undefined,
             }}>
 
-                {/* Logo y toggle de modo oscuro */}
+                {/* Logo */}
                 <div style={{ padding: "24px 20px 20px", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                         <div style={{ width: "34px", height: "34px", background: "var(--accent)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -145,12 +117,13 @@ export const DashboardSidebar = ({ activeTab, setActiveTab, darkMode, toggleDark
                             Chef<span style={{ color: "var(--accent)" }}>sync</span>
                         </span>
                     </div>
+                    {/* Dark mode toggle */}
                     <div onClick={toggleDarkMode} title={darkMode ? "Modo claro" : "Modo oscuro"} style={{ cursor: "pointer", color: "var(--muted)", fontSize: "14px", padding: "4px" }}>
                         {darkMode ? "☀️" : "🌙"}
                     </div>
                 </div>
 
-                {/* Indicadores de estado */}
+                {/* Status indicators */}
                 <div style={{ padding: "10px 20px", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", gap: "12px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "11px", color: isOnline ? "var(--accent)" : "var(--accent3)" }}>
                         <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: isOnline ? "var(--accent)" : "var(--accent3)" }} />
@@ -167,7 +140,7 @@ export const DashboardSidebar = ({ activeTab, setActiveTab, darkMode, toggleDark
                     )}
                 </div>
 
-                {/* Pill de tenant */}
+                {/* Tenant pill */}
                 <div style={{ margin: "14px 14px 0", background: "var(--bg3)", border: "1px solid var(--border)", borderRadius: "10px", padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px" }}>
                     <div style={{ width: "28px", height: "28px", borderRadius: "8px", background: "linear-gradient(135deg, #6c63ff, #c8f060)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 700, color: "#000", fontFamily: "var(--font-head)", flexShrink: 0 }}>
                         CS
@@ -178,7 +151,7 @@ export const DashboardSidebar = ({ activeTab, setActiveTab, darkMode, toggleDark
                     </div>
                 </div>
 
-                {/* Navegación */}
+                {/* Nav */}
                 <nav style={{ padding: "16px 12px", flex: 1 }}>
                     <div style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.08em", color: "var(--muted)", padding: "0 8px", marginBottom: "6px", textTransform: "uppercase" }}>
                         Principal
@@ -191,7 +164,7 @@ export const DashboardSidebar = ({ activeTab, setActiveTab, darkMode, toggleDark
                     {navBusiness.map(item => <NavItem key={item.id} item={item} />)}
                 </nav>
 
-                {/* Usuario y logout */}
+                {/* User + logout */}
                 <div style={{ padding: "12px", borderTop: "1px solid var(--border)" }}>
                     <div
                         onClick={() => { localStorage.removeItem("user"); window.location.href = "/login"; }}
@@ -200,12 +173,10 @@ export const DashboardSidebar = ({ activeTab, setActiveTab, darkMode, toggleDark
                         onMouseLeave={e => e.currentTarget.style.background = "transparent"}
                     >
                         <div style={{ width: "30px", height: "30px", borderRadius: "50%", background: "var(--bg4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 600, color: "var(--accent)", fontFamily: "var(--font-head)", flexShrink: 0 }}>
-                            {(() => { try { const u = JSON.parse(localStorage.getItem("user")); return u?.email?.charAt(0).toUpperCase() || "U"; } catch(e) { return "U"; } })()}
+                            AD
                         </div>
-                        <div style={{ flex: 1, overflow: "hidden" }}>
-                            <div style={{ fontSize: "12px", fontWeight: 500, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                {(() => { try { const u = JSON.parse(localStorage.getItem("user")); return u?.email?.split("@")[0] || "Usuario"; } catch(e) { return "Usuario"; } })()}
-                            </div>
+                        <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: "12px", fontWeight: 500, color: "var(--text)" }}>Admin</div>
                             <div style={{ fontSize: "10px", color: "var(--muted)" }}>Cerrar sesión</div>
                         </div>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>

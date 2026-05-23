@@ -1,17 +1,5 @@
-// =============================================================================
-// ARCHIVO: ClientModals.jsx
-// DESCRIPCIÓN: Modales para gestión de clientes.
-// Incluye: NewClientModal, ProductionConfirmModal, ConfirmModal
-// =============================================================================
-
 import React from "react";
 
-// =============================================================================
-// SUB-COMPONENTE: ModalWrapper
-// =============================================================================
-// Wrapper reutilizable para modales.
-// Props: onClose, children, size
-// =============================================================================
 const ModalWrapper = ({ onClose, children, size = "small" }) => (
     <div className="modal-overlay" onClick={onClose}>
         <div className={`modal-content ${size}`} onClick={e => e.stopPropagation()}>
@@ -20,12 +8,6 @@ const ModalWrapper = ({ onClose, children, size = "small" }) => (
     </div>
 );
 
-// =============================================================================
-// COMPONENTE: NewClientModal
-// =============================================================================
-// Modal para crear un nuevo cliente.
-// Props: show, onClose, newClient, setNewClient, onSave
-// =============================================================================
 export const NewClientModal = ({ show, onClose, newClient, setNewClient, onSave }) => {
     if (!show) return null;
     return (
@@ -61,12 +43,6 @@ export const NewClientModal = ({ show, onClose, newClient, setNewClient, onSave 
     );
 };
 
-// =============================================================================
-// COMPONENTE: ProductionConfirmModal
-// =============================================================================
-// Modal de confirmación para iniciar producción (duplicado funcional).
-// Props: show, onClose, onConfirm, orderId
-// =============================================================================
 export const ProductionConfirmModal = ({ show, onClose, onConfirm, orderId }) => {
     if (!show) return null;
     return (
@@ -86,12 +62,6 @@ export const ProductionConfirmModal = ({ show, onClose, onConfirm, orderId }) =>
     );
 };
 
-// =============================================================================
-// COMPONENTE: ConfirmModal
-// =============================================================================
-// Modal de confirmación genérico.
-// Props: show, onClose, onConfirm, title, message
-// =============================================================================
 export const ConfirmModal = ({ show, onClose, onConfirm, title, message }) => {
     if (!show) return null;
     return (

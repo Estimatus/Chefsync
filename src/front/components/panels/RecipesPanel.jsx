@@ -1,24 +1,10 @@
-// =============================================================================
-// ARCHIVO: RecipesPanel.jsx
-// DESCRIPCIÓN: Panel de gestión de recetas.
-// Muestra catálogo con búsqueda, paginación y cálculos de costo/margen.
-// =============================================================================
-
 import React, { useState, useMemo } from 'react';
 import { DashboardRecipes } from '../DashboardRecipes.jsx';
 
-// =============================================================================
-// COMPONENTE: RecipesPanel
-// =============================================================================
-// Panel con tabla de recetas, búsqueda y paginación.
-// Props: recipes, onViewRecipe, onDelete, onNewRecipe, onExport,
-//        calculateCost, calculateMargin
-// =============================================================================
 export const RecipesPanel = ({ recipes, onViewRecipe, onDelete, onNewRecipe, onExport, calculateCost, calculateMargin }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [pagination, setPagination] = useState({ page: 1, perPage: 10 });
 
-    // Filtrar recetas por nombre
     const filteredData = useMemo(() => {
         if (!searchTerm) return recipes;
         const term = searchTerm.toLowerCase();
@@ -27,22 +13,18 @@ export const RecipesPanel = ({ recipes, onViewRecipe, onDelete, onNewRecipe, onE
         );
     }, [recipes, searchTerm]);
 
-    // Recetas de la página actual
     const paginatedData = useMemo(() => {
         const start = (pagination.page - 1) * pagination.perPage;
         return filteredData.slice(start, start + pagination.perPage);
     }, [filteredData, pagination.page, pagination.perPage]);
 
-    // Total de páginas
     const totalPages = Math.ceil(filteredData.length / pagination.perPage);
 
-    // Manejar búsqueda (reset a página 1)
     const handleSearch = (value) => {
         setSearchTerm(value);
         setPagination(p => ({ ...p, page: 1 }));
     };
 
-    // Cambiar de página
     const changePage = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
             setPagination(p => ({ ...p, page: newPage }));
@@ -51,7 +33,6 @@ export const RecipesPanel = ({ recipes, onViewRecipe, onDelete, onNewRecipe, onE
 
     return (
         <>
-            {/* Header con botón, búsqueda y exportar */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
                 <button className="btn-primary" onClick={onNewRecipe}>
                     + Nueva Receta
@@ -71,7 +52,6 @@ export const RecipesPanel = ({ recipes, onViewRecipe, onDelete, onNewRecipe, onE
                 </div>
             </div>
 
-            {/* Tabla de recetas */}
             <DashboardRecipes
                 recipes={paginatedData}
                 calculateCost={calculateCost}
@@ -81,7 +61,6 @@ export const RecipesPanel = ({ recipes, onViewRecipe, onDelete, onNewRecipe, onE
                 onNewRecipe={onNewRecipe}
             />
 
-            {/* Paginación */}
             {totalPages > 1 && (
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginTop: '20px' }}>
                     <button className="btn-secondary" onClick={() => changePage(pagination.page - 1)} disabled={pagination.page === 1} style={{ padding: '5px 10px' }}>‹</button>

@@ -7,18 +7,15 @@
 import React, { useState, useEffect } from 'react';
 import { useTransactions } from '../../hooks/useTransactions';
 
-// Categorías de ingreso (sugerencias en el datalist)
+// Categorías predefinidas para el datalist
 const INCOME_CATEGORIES = ["Ventas", "Servicios", "Anticipo", "Otro ingreso"];
-
-// Categorías de gasto (sugerencias en el datalist)
 const EXPENSE_CATEGORIES = [
     "Materiales", "Insumos", "Transporte", "Renta",
     "Servicios públicos", "Marketing", "Equipamiento", "Otro gasto"
 ];
 
 // =============================================================================
-// SUB-COMPONENTE: KPI Card
-// Tarjeta individual para mostrar un indicador clave (KPI).
+// KPI Card - Tarjeta para indicador clave
 // =============================================================================
 const KPI = ({ label, value, color, sub }) => (
     <div style={{
@@ -56,10 +53,8 @@ const KPI = ({ label, value, color, sub }) => (
 
 // =============================================================================
 // COMPONENTE PRINCIPAL: FinanzasPanel
-// Props: backendUrl (URL del backend para las peticiones)
 // =============================================================================
 export const FinanzasPanel = ({ backendUrl }) => {
-    // Hook con funciones y datos de transacciones
     const {
         transactions,
         summary,
@@ -70,16 +65,10 @@ export const FinanzasPanel = ({ backendUrl }) => {
         loading
     } = useTransactions(backendUrl);
 
-    // Mostrar/ocultar formulario de nuevo movimiento
+    // Estados locales
     const [showForm, setShowForm] = useState(false);
-
-    // Mes seleccionado para filtrar (formato YYYY-MM, default: mes actual)
     const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
-
-    // Filtro por tipo: "" (todos), "income", "expense"
     const [filterType, setFilterType] = useState('');
-
-    // Datos del formulario de nueva transacción
     const [form, setForm] = useState({
         type: 'income',
         amount: '',
@@ -88,13 +77,13 @@ export const FinanzasPanel = ({ backendUrl }) => {
         date: new Date().toISOString().slice(0, 10),
     });
 
-    // Cuando cambia el mes o el filtro, recargar datos del backend
+    // Cargar datos cuando cambia mes o filtro
     useEffect(() => {
         fetchTransactions(selectedMonth, filterType || null);
         fetchSummary(selectedMonth);
     }, [selectedMonth, filterType]);
 
-    // Submit del formulario: crea la transacción y limpia el form
+    // Submit del formulario
     const handleSubmit = async () => {
         if (!form.amount || !form.type) return;
         const ok = await createTransaction(form);
@@ -110,18 +99,16 @@ export const FinanzasPanel = ({ backendUrl }) => {
         }
     };
 
-    // Elegir lista de categorías según el tipo seleccionado
     const categories = form.type === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
 
     return (
         <div>
-            {/* HEADER: Botón nuevo movimiento y filtros */}
+            {/* HEADER */}
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
                 <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
                     {showForm ? "✕ Cancelar" : "+ Registrar movimiento"}
                 </button>
 
-                {/* Selector de mes */}
                 <input
                     type="month"
                     value={selectedMonth}
@@ -130,7 +117,6 @@ export const FinanzasPanel = ({ backendUrl }) => {
                     style={{ maxWidth: "160px" }}
                 />
 
-                {/* Botones de filtro por tipo */}
                 <div style={{ display: "flex", gap: "6px", marginLeft: "auto" }}>
                     {["", "income", "expense"].map(t => (
                         <button
@@ -145,7 +131,7 @@ export const FinanzasPanel = ({ backendUrl }) => {
                 </div>
             </div>
 
-            {/* FORMULARIO: Nuevo movimiento (oculto por defecto) */}
+            {/* FORMULARIO */}
             {showForm && (
                 <div style={{
                     background: "var(--bg2)",
@@ -158,7 +144,6 @@ export const FinanzasPanel = ({ backendUrl }) => {
                         Nuevo movimiento
                     </div>
 
-                    {/* Campos en grid: tipo, monto, categoría, fecha */}
                     <div style={{
                         display: "grid",
                         gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
@@ -211,7 +196,6 @@ export const FinanzasPanel = ({ backendUrl }) => {
                         </div>
                     </div>
 
-                    {/* Descripción opcional */}
                     <div style={{ marginBottom: "16px" }}>
                         <label>Descripción</label>
                         <input
@@ -228,7 +212,7 @@ export const FinanzasPanel = ({ backendUrl }) => {
                 </div>
             )}
 
-            {/* KPIs: 4 tarjetas con resumen financiero */}
+            {/* KPIs */}
             {summary && (
                 <div style={{
                     display: "grid",
@@ -236,30 +220,14 @@ export const FinanzasPanel = ({ backendUrl }) => {
                     gap: "12px",
                     marginBottom: "16px"
                 }}>
-                    <KPI
-                        label="Ingresos"
-                        value={`$${summary.total_income.toFixed(2)}`}
-                        color="var(--accent)"
-                    />
-                    <KPI
-                        label="Gastos"
-                        value={`$${summary.total_expense.toFixed(2)}`}
-                        color="var(--accent3)"
-                    />
-                    <KPI
-                        label="Ganancia neta"
-                        value={`$${summary.net.toFixed(2)}`}
-                        color={summary.net >= 0 ? "var(--accent)" : "var(--accent3)"}
-                    />
-                    <KPI
-                        label="Movimientos"
-                        value={summary.transaction_count}
-                        sub={selectedMonth}
-                    />
+                    <KPI label="Ingresos" value={`$${summary.total_income.toFixed(2)}`} color="var(--accent)" />
+                    <KPI label="Gastos" value={`$${summary.total_expense.toFixed(2)}`} color="var(--accent3)" />
+                    <KPI label="Ganancia neta" value={`$${summary.net.toFixed(2)}`} color={summary.net >= 0 ? "var(--accent)" : "var(--accent3)"} />
+                    <KPI label="Movimientos" value={summary.transaction_count} sub={selectedMonth} />
                 </div>
             )}
 
-            {/* TABLA: Lista de transacciones del mes */}
+            {/* TABLA */}
             <div style={{
                 background: "var(--bg2)",
                 border: "1px solid var(--border)",

@@ -1,38 +1,24 @@
-// =============================================================================
-// ARCHIVO: useTransactions.js
-// DESCRIPCIÓN: Hook de React para gestionar transacciones de caja.
-// Provee funciones para CRUD de transacciones y obtener resumen financiero.
-// =============================================================================
+# =============================================================================
+# HOOK: useTransactions
+# Hook de React para manejar transacciones de caja desde el frontend.
+# =============================================================================
 
 import { useState, useCallback } from 'react';
 import { apiFetch } from '../utils/api';
 
-// =============================================================================
-// HOOK: useTransactions
-// =============================================================================
-// Hook personalizado para operaciones con transacciones.
-// Params: backendUrl (string)
-// Returns: Object con loading, error, transactions, summary, y funciones CRUD
-// =============================================================================
 export const useTransactions = (backendUrl) => {
-    // Estados locales para UI
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [transactions, setTransactions] = useState([]);
     const [summary, setSummary] = useState(null);
 
-    // =============================================================================
-    // FUNCIÓN: fetchTransactions
-    // =============================================================================
-    // Obtiene lista de transacciones filtradas por mes/tipo.
-    // Params: month (string, opcional) - "YYYY-MM", type (string, opcional) - "income"|"expense"
-    // Returns: Array de transacciones
-    // =============================================================================
+    # =============================================================================
+    # FETCH TRANSACTIONS - Obtener lista de transacciones
+    # Params: month (YYYY-MM), type (income|expense)
+    # =============================================================================
     const fetchTransactions = useCallback(async (month = null, type = null) => {
         try {
             setLoading(true);
-
-            // Construir URL con query params opcionales
             let url = `${backendUrl}/api/transactions`;
             const params = new URLSearchParams();
             if (month) params.append('month', month);
@@ -41,7 +27,6 @@ export const useTransactions = (backendUrl) => {
 
             const resp = await apiFetch(url);
             const data = await resp.json();
-
             setTransactions(data);
             return data;
         } catch (err) {
@@ -52,20 +37,13 @@ export const useTransactions = (backendUrl) => {
         }
     }, [backendUrl]);
 
-    // =============================================================================
-    // FUNCIÓN: fetchSummary
-    // =============================================================================
-    // Obtiene resumen financiero (KPIs) del mes.
-    // Params: month (string, opcional) - "YYYY-MM", default: mes actual
-    // Returns: Object con total_income, total_expense, net, by_category, transaction_count
-    // =============================================================================
+    # =============================================================================
+    # FETCH SUMMARY - Obtener resumen financiero (KPIs)
+    # =============================================================================
     const fetchSummary = useCallback(async (month = null) => {
         try {
             const currentMonth = month || new Date().toISOString().slice(0, 7);
-
-            const resp = await apiFetch(
-                `${backendUrl}/api/transactions/summary?month=${currentMonth}`
-            );
+            const resp = await apiFetch(`${backendUrl}/api/transactions/summary?month=${currentMonth}`);
             const data = await resp.json();
             setSummary(data);
             return data;
@@ -75,17 +53,12 @@ export const useTransactions = (backendUrl) => {
         }
     }, [backendUrl]);
 
-    // =============================================================================
-    // FUNCIÓN: createTransaction
-    // =============================================================================
-    // Registra un nuevo movimiento de caja.
-    // Params: transaction (Object) - { type, amount, category, description, date }
-    // Returns: boolean
-    // =============================================================================
+    # =============================================================================
+    # CREATE TRANSACTION - Registrar nuevo movimiento
+    # =============================================================================
     const createTransaction = useCallback(async (transaction) => {
         try {
             setLoading(true);
-
             const resp = await apiFetch(`${backendUrl}/api/transactions`, {
                 method: 'POST',
                 body: JSON.stringify({
@@ -93,10 +66,7 @@ export const useTransactions = (backendUrl) => {
                     amount: parseFloat(transaction.amount) || 0,
                 })
             });
-
             if (!resp.ok) throw new Error('Error al crear transacción');
-
-            // Recargar después de crear
             await fetchTransactions();
             await fetchSummary();
             return true;
@@ -108,22 +78,13 @@ export const useTransactions = (backendUrl) => {
         }
     }, [backendUrl, fetchTransactions, fetchSummary]);
 
-    // =============================================================================
-    // FUNCIÓN: deleteTransaction
-    // =============================================================================
-    // Elimina una transacción.
-    // Params: id (int) - ID de la transacción
-    // Returns: boolean
-    // =============================================================================
+    # =============================================================================
+    # DELETE TRANSACTION - Eliminar un movimiento
+    # =============================================================================
     const deleteTransaction = useCallback(async (id) => {
         try {
             setLoading(true);
-
-            await apiFetch(`${backendUrl}/api/transactions/${id}`, {
-                method: 'DELETE'
-            });
-
-            // Recargar después de eliminar
+            await apiFetch(`${backendUrl}/api/transactions/${id}`, { method: 'DELETE' });
             await fetchTransactions();
             await fetchSummary();
             return true;

@@ -5,11 +5,9 @@ import { Footer } from "../components/Footer"
 
 export const Layout = () => {
     const location = useLocation();
-    const hideChrome = location.pathname.startsWith("/admin") ||
-                       location.pathname.startsWith("/settings") ||
-                       location.pathname.startsWith("/chef") ||
-                       location.pathname.startsWith("/login") ||
-                       location.pathname.startsWith("/signup");
+    const hideChrome = location.pathname.startsWith("/admin") || 
+                       location.pathname.startsWith("/settings") || 
+                       location.pathname.startsWith("/chef");
 
     return (
         <ScrollToTop>

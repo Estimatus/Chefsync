@@ -1,23 +1,10 @@
-// =============================================================================
-// ARCHIVO: OrdersPanel.jsx
-// DESCRIPCIÓN: Panel de gestión de pedidos.
-// Muestra lista de pedidos con búsqueda, paginación y acciones de estado.
-// =============================================================================
-
 import React, { useState, useMemo } from 'react';
 import { DashboardOrders } from '../DashboardOrders.jsx';
 
-// =============================================================================
-// COMPONENTE: OrdersPanel
-// =============================================================================
-// Panel con tabla de pedidos, búsqueda y paginación.
-// Props: orders, onStatusChange, onEditOrder, onStartProduction, onNewOrder, onExport
-// =============================================================================
 export const OrdersPanel = ({ orders, onStatusChange, onEditOrder, onStartProduction, onNewOrder, onExport }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [pagination, setPagination] = useState({ page: 1, perPage: 10 });
 
-    // Filtrar pedidos por cliente, estado o fecha
     const filteredData = useMemo(() => {
         if (!searchTerm) return orders;
         const term = searchTerm.toLowerCase();
@@ -28,22 +15,18 @@ export const OrdersPanel = ({ orders, onStatusChange, onEditOrder, onStartProduc
         );
     }, [orders, searchTerm]);
 
-    // Pedidos de la página actual
     const paginatedData = useMemo(() => {
         const start = (pagination.page - 1) * pagination.perPage;
         return filteredData.slice(start, start + pagination.perPage);
     }, [filteredData, pagination.page, pagination.perPage]);
 
-    // Total de páginas
     const totalPages = Math.ceil(filteredData.length / pagination.perPage);
 
-    // Manejar búsqueda (reset a página 1)
     const handleSearch = (value) => {
         setSearchTerm(value);
         setPagination(p => ({ ...p, page: 1 }));
     };
 
-    // Cambiar de página
     const changePage = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
             setPagination(p => ({ ...p, page: newPage }));
@@ -52,7 +35,6 @@ export const OrdersPanel = ({ orders, onStatusChange, onEditOrder, onStartProduc
 
     return (
         <>
-            {/* Header con botón, búsqueda y exportar */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
                 <button className="btn-primary" onClick={onNewOrder}>
                     + Nuevo Pedido
@@ -72,7 +54,6 @@ export const OrdersPanel = ({ orders, onStatusChange, onEditOrder, onStartProduc
                 </div>
             </div>
 
-            {/* Tabla de pedidos */}
             <DashboardOrders
                 orders={paginatedData}
                 onStatusChange={onStatusChange}
@@ -81,7 +62,6 @@ export const OrdersPanel = ({ orders, onStatusChange, onEditOrder, onStartProduc
                 onNewOrder={onNewOrder}
             />
 
-            {/* Paginación */}
             {totalPages > 1 && (
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginTop: '20px' }}>
                     <button className="btn-secondary" onClick={() => changePage(pagination.page - 1)} disabled={pagination.page === 1} style={{ padding: '5px 10px' }}>‹</button>

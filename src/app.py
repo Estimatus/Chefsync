@@ -20,12 +20,7 @@ app = Flask(__name__)
 app.url_map.strict_slashes = False
 
 # CORS más permisivo para desarrollo
-CORS(app, 
-    resources={r"/*": {"origins": "*"}}, 
-    expose_headers=['Content-Type', 'X-Tenant-ID'],
-    allow_headers=['Content-Type', 'Authorization', 'X-Tenant-ID'],
-    methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-)
+CORS(app, resources={r"/*": {"origins": "*"}}, expose_headers=['Content-Type'])
 
 # Inicializar SocketIO
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')

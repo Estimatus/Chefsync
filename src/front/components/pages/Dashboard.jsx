@@ -1,10 +1,3 @@
-// =============================================================================
-// ARCHIVO: Dashboard.jsx
-// DESCRIPCIÓN: Componente principal del dashboard.
-// Gestiona estado global, panels, modals y toda la lógica de negocio.
-// Incluye conexión WebSocket, soporte offline y notificaciones push.
-// =============================================================================
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../../hooks/useGlobalReducer.jsx";
@@ -30,15 +23,8 @@ import { NewRecipeModal } from "../modals/RecipeModals.jsx";
 import { RecipeViewModal } from "../modals/RecipeViewModal.jsx";
 import { exportIngredients, exportRecipes, exportOrders, exportClients } from "../../utils/export.js";
 import { validateEmail } from "../../utils/validation.js";
-import { apiFetch } from "../../utils/api.js";
 import "../css/Dashboard.css";
 
-// =============================================================================
-// COMPONENTE: Dashboard
-// =============================================================================
-// Componente principal que controla toda la aplicación.
-// Carga datos iniciales, maneja modals, tabs y eventos de negocio.
-// =============================================================================
 export const Dashboard = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const { store, dispatch } = useGlobalReducer();
@@ -47,13 +33,11 @@ export const Dashboard = () => {
     const { isOnline, offlineQueue, pendingCount, queueOrder } = useOfflineOrders(backendUrl);
     const { permission: notifPermission, requestPermission: requestNotifPermission, showNotification } = usePushNotifications();
 
-    // Hooks de datos
     const ingredientsHook = useIngredients(backendUrl, dispatch);
     const recipesHook = useRecipes(backendUrl, dispatch);
     const ordersHook = useOrders(backendUrl, dispatch);
     const clientsHook = useClients(backendUrl, dispatch);
 
-    // Estados de UI
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("overview");
     const [darkMode, setDarkMode] = useState(() => {
@@ -65,7 +49,6 @@ export const Dashboard = () => {
     const [successMessage, setSuccessMessage] = useState(null);
     const [submitting, setSubmitting] = useState(false);
 
-    // Estados de modals
     const [selectedRecipeId, setSelectedRecipeId] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [showNewRecipe, setShowNewRecipe] = useState(false);
@@ -79,7 +62,6 @@ export const Dashboard = () => {
     const [editConfirm, setEditConfirm] = useState(false);
     const [showNewIngredientEdit, setShowNewIngredientEdit] = useState(false);
 
-    // Estados de formularios - Receta
     const [newRecipe, setNewRecipe] = useState({ name: '', sale_price: '', description: '' });
     const [newRecipeIngredients, setNewRecipeIngredients] = useState([]);
     const [selectedIngToAdd, setSelectedIngToAdd] = useState('');
@@ -90,48 +72,31 @@ export const Dashboard = () => {
     const [selectedIngToEdit, setSelectedIngToEdit] = useState('');
     const [newIngredientEdit, setNewIngredientEdit] = useState({ name: '', unit: 'kg', cost_per_unit: '', current_stock: 0, supplier: '' });
 
-    // Estados de formularios - Pedido
     const [newOrder, setNewOrder] = useState({ client_id: '', delivery_date: '', notes: '' });
     const [newOrderItems, setNewOrderItems] = useState([]);
     const [selectedRecipeForOrder, setSelectedRecipeForOrder] = useState('');
     const [orderItemQty, setOrderItemQty] = useState(1);
     const [editOrderItems, setEditOrderItems] = useState([]);
-
-    // Estados de formularios - Cliente
     const [newClient, setNewClient] = useState({ name: '', email: '', phone: '', address: '' });
-
-    // Estados de UI
     const [calculatorQty, setCalculatorQty] = useState(10);
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    // =============================================================================
-    // FUNCIÓN: showError
-    // =============================================================================
-    // Muestra mensaje de error temporalmente (5 segundos).
-    // =============================================================================
     const showError = (msg) => {
         setErrorMessage(msg);
         setTimeout(() => setErrorMessage(null), 5000);
     };
 
-    // =============================================================================
-    // FUNCIÓN: showSuccess
-    // =============================================================================
-    // Muestra mensaje de éxito temporalmente (3 segundos).
-    // =============================================================================
     const showSuccess = (msg) => {
         setSuccessMessage(msg);
         setTimeout(() => setSuccessMessage(null), 3000);
     };
 
-    // Efecto para persistir modo oscuro
     useEffect(() => {
         localStorage.setItem("darkMode", JSON.stringify(darkMode));
     }, [darkMode]);
 
     const toggleDarkMode = () => setDarkMode(!darkMode);
 
-    // Verificar autenticación al montar
     useEffect(() => {
         const user = localStorage.getItem("user");
         if (!user) {
@@ -150,7 +115,6 @@ export const Dashboard = () => {
         }
     }, [navigate]);
 
-    // Verificar sesión cada 5 minutos
     useEffect(() => {
         const checkSession = () => {
             const user = localStorage.getItem("user");
@@ -163,28 +127,22 @@ export const Dashboard = () => {
         return () => clearInterval(interval);
     }, [navigate]);
 
-    // =============================================================================
-    // FUNCIÓN: logout
-    // =============================================================================
-    // Cierra sesión y redirige a login.
-    // =============================================================================
     const logout = () => {
         localStorage.removeItem("user");
         showSuccess('Sesión cerrada correctamente');
         setTimeout(() => navigate("/login"), 1000);
     };
 
-    // Cargar datos iniciales del backend
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const [ing, rec, ord, low, marg, cli] = await Promise.all([
-                    apiFetch(`${backendUrl}/api/ingredients`),
-                    apiFetch(`${backendUrl}/api/recipes`),
-                    apiFetch(`${backendUrl}/api/orders`),
-                    apiFetch(`${backendUrl}/api/ingredients/low-stock`),
-                    apiFetch(`${backendUrl}/api/recipes/alerts`),
-                    apiFetch(`${backendUrl}/api/clients`)
+                    fetch(`${backendUrl}/api/ingredients`),
+                    fetch(`${backendUrl}/api/recipes`),
+                    fetch(`${backendUrl}/api/orders`),
+                    fetch(`${backendUrl}/api/ingredients/low-stock`),
+                    fetch(`${backendUrl}/api/recipes/alerts`),
+                    fetch(`${backendUrl}/api/clients`)
                 ]);
                 dispatch({ type: "set_ingredients", payload: await ing.json() });
                 dispatch({ type: "set_recipes", payload: await rec.json() });
@@ -201,14 +159,12 @@ export const Dashboard = () => {
         fetchData();
     }, [backendUrl, dispatch]);
 
-    // Solicitar permisos de notificaciones
     useEffect(() => {
         if (notifPermission === 'default') {
             requestNotifPermission();
         }
     }, [notifPermission, requestNotifPermission]);
 
-    // Configurar listeners de eventos WebSocket para notificaciones
     useEffect(() => {
         const handleNewOrder = (event) => {
             const order = event.detail;
@@ -245,18 +201,12 @@ export const Dashboard = () => {
         };
     }, [showNotification]);
 
-    // Variables derivadas para stats
     const totalRecipes = store.recipes.length;
     const totalIngredients = store.ingredients.length;
     const pendingOrders = store.orders.filter(o => o.status === "pending").length;
     const inProductionOrders = store.orders.filter(o => o.status === "in_production").length;
     const selectedRecipe = selectedRecipeId ? store.recipes.find(r => r.id === selectedRecipeId) : null;
 
-    // =============================================================================
-    // FUNCIÓN: addIngredientToRecipe
-    // =============================================================================
-    // Agrega un ingrediente a la nueva receta desde el selector.
-    // =============================================================================
     const addIngredientToRecipe = () => {
         if (selectedIngToAdd > 0) {
             const ing = store.ingredients.find(i => i.id == selectedIngToAdd);
@@ -274,16 +224,16 @@ export const Dashboard = () => {
         }
     };
 
-    // Crear ingrediente y agregarlo a la receta sin cerrar modal
     const createNewIngredientForRecipeStay = async () => {
         if (!newIngredient.name || !newIngredient.unit) return;
         try {
-            const r = await apiFetch(`${backendUrl}/api/ingredients`, {
+            const r = await fetch(`${backendUrl}/api/ingredients`, {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...newIngredient, cost_per_unit: parseFloat(newIngredient.cost_per_unit) || 0, current_stock: parseFloat(newIngredient.current_stock) || 0 })
             });
             const ing = await r.json();
-            const resp = await apiFetch(`${backendUrl}/api/ingredients`);
+            const resp = await fetch(`${backendUrl}/api/ingredients`);
             dispatch({ type: "set_ingredients", payload: await resp.json() });
             if (!newRecipeIngredients.find(i => i.ingredient_id == ing.id)) {
                 setNewRecipeIngredients([...newRecipeIngredients, { ...ing, ingredient_id: ing.id, quantity_needed: 1, display_unit: ing.unit }]);
@@ -292,7 +242,6 @@ export const Dashboard = () => {
         } catch (err) { alert('Error: ' + err.message); }
     };
 
-    // Guardar ingrediente desde el tab de inventario
     const saveIngredientFromTab = async () => {
         if (!newIngredient.name || !newIngredient.unit || !newIngredient.cost_per_unit) {
             return showError('Nombre, unidad y precio son requeridos');
@@ -307,7 +256,6 @@ export const Dashboard = () => {
         }
     };
 
-    // Guardar ingrediente editado
     const saveEditedIngredient = async () => {
         if (!editingIngredient || !editingIngredient.name || !editingIngredient.unit || !editingIngredient.cost_per_unit) {
             return showError('Nombre, unidad y precio son requeridos');
@@ -321,7 +269,6 @@ export const Dashboard = () => {
         }
     };
 
-    // Crear nueva receta
     const handleNewRecipe = async () => {
         if (!newRecipe.name || !newRecipe.sale_price) {
             return showError('Nombre y precio son requeridos');
@@ -341,12 +288,10 @@ export const Dashboard = () => {
         }
     };
 
-    // Iniciar proceso de producción (confirmación previa)
     const handleStartProduction = async (orderId) => {
         setProductionConfirm(orderId);
     };
 
-    // Confirmar y ejecutar producción
     const handleConfirmProduction = async () => {
         const success = await ordersHook.startProduction(productionConfirm);
         setProductionConfirm(null);
@@ -357,7 +302,6 @@ export const Dashboard = () => {
         }
     };
 
-    // Cambiar estado de un pedido
     const handleOrderStatusChange = async (orderId, newStatus) => {
         setSubmitting(true);
         const success = await ordersHook.updateOrderStatus(orderId, newStatus);
@@ -373,7 +317,6 @@ export const Dashboard = () => {
         }
     };
 
-    // Agregar item al nuevo pedido
     const handleAddItemToNewOrder = () => {
         if (!selectedRecipeForOrder || orderItemQty < 1) return;
         const recipe = store.recipes.find(r => r.id == selectedRecipeForOrder);
@@ -384,7 +327,6 @@ export const Dashboard = () => {
         setOrderItemQty(1);
     };
 
-    // Agregar item al pedido en edición
     const handleAddItemToEditOrder = () => {
         if (!selectedRecipeForOrder || orderItemQty < 1) return;
         const recipe = store.recipes.find(r => r.id == selectedRecipeForOrder);
@@ -395,7 +337,6 @@ export const Dashboard = () => {
         setOrderItemQty(1);
     };
 
-    // Guardar cambios del pedido editado
     const handleSaveOrderEdit = async () => {
         if (!selectedOrderEdit) return;
         setSubmitting(true);
@@ -414,13 +355,11 @@ export const Dashboard = () => {
         }
     };
 
-    // Crear nuevo pedido
     const handleSaveNewOrder = async () => {
         if (!newOrder.client_id || !newOrder.delivery_date || newOrderItems.length === 0) {
             return alert('Cliente, fecha y al menos un item son requeridos');
         }
         try {
-            // Soporte offline: guardar en cola si no hay conexión
             if (!navigator.onLine) {
                 const offlineOrder = {
                     ...newOrder,
@@ -447,7 +386,6 @@ export const Dashboard = () => {
             }
         } catch (err) {
             setSubmitting(false);
-            // Caer al modo offline si hay error
             const offlineOrder = {
                 ...newOrder,
                 client_id: parseInt(newOrder.client_id),
@@ -461,7 +399,6 @@ export const Dashboard = () => {
         }
     };
 
-    // Crear nuevo cliente
     const handleSaveNewClient = async () => {
         if (!newClient.name) {
             return showError('El nombre es requerido');
@@ -481,7 +418,6 @@ export const Dashboard = () => {
         }
     };
 
-    // Iniciar edición de receta
     const handleStartEditRecipe = () => {
         setEditRecipe({
             name: selectedRecipe.name,
@@ -492,17 +428,14 @@ export const Dashboard = () => {
         setEditIngredients((selectedRecipe.ingredients || []).map(ing => ({ ...ing, checked: false, display_unit: 'kg' })));
     };
 
-    // Toggle checkbox de ingrediente en edición
     const toggleIngredientEdit = (id) => {
         setEditIngredients(editIngredients.map(ing => ing.id === id ? { ...ing, checked: !ing.checked } : ing));
     };
 
-    // Eliminar ingredientes marcados
     const removeCheckedIngredients = () => {
         setEditIngredients(editIngredients.filter(ing => !ing.checked));
     };
 
-    // Agregar ingrediente existente a receta en edición
     const addIngredientToEdit = () => {
         if (selectedIngToEdit > 0) {
             const ing = store.ingredients.find(i => i.id == selectedIngToEdit);
@@ -515,16 +448,16 @@ export const Dashboard = () => {
         }
     };
 
-    // Crear nuevo ingrediente desde modal de edición de receta
     const createNewIngredientForRecipeEdit = async () => {
         if (!newIngredientEdit.name || !newIngredientEdit.unit || !newIngredientEdit.cost_per_unit) return;
         try {
-            const r = await apiFetch(`${backendUrl}/api/ingredients`, {
+            const r = await fetch(`${backendUrl}/api/ingredients`, {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...newIngredientEdit, cost_per_unit: parseFloat(newIngredientEdit.cost_per_unit) || 0, current_stock: parseFloat(newIngredientEdit.current_stock) || 0 })
             });
             const ing = await r.json();
-            const resp = await apiFetch(`${backendUrl}/api/ingredients`);
+            const resp = await fetch(`${backendUrl}/api/ingredients`);
             dispatch({ type: "set_ingredients", payload: await resp.json() });
             if (!editIngredients.find(i => i.ingredient_id == ing.id)) {
                 setEditIngredients([...editIngredients, { ...ing, id: Date.now(), ingredient_id: ing.id, quantity_needed: 1, checked: false }]);
@@ -534,7 +467,6 @@ export const Dashboard = () => {
         } catch (err) { alert('Error: ' + err.message); }
     };
 
-    // Guardar cambios de receta
     const handleSaveRecipeEdit = async () => {
         setSubmitting(true);
         const success = await recipesHook.updateRecipe(selectedRecipe.id, editRecipe, editIngredients, selectedRecipe.ingredients);
@@ -548,7 +480,6 @@ export const Dashboard = () => {
         }
     };
 
-    // Eliminar receta
     const handleDeleteRecipe = async (id) => {
         const success = await recipesHook.deleteRecipe(id);
         setDeleteConfirm(null);
@@ -559,7 +490,6 @@ export const Dashboard = () => {
         }
     };
 
-    // Calcular ingredientes para cierta cantidad de porciones
     const calculateForQty = (recipe, qty) => recipe?.ingredients?.map(ing => ({
         name: ing.ingredient_name,
         unit: ing.unit,
@@ -567,9 +497,6 @@ export const Dashboard = () => {
         perPlate: ing.quantity_needed
     })) || [];
 
-    // =============================================================================
-    // RENDER: Pantalla de carga
-    // =============================================================================
     if (loading) return (
         <div className="dashboard-loading">
             <div className="spinner-container">
@@ -581,9 +508,6 @@ export const Dashboard = () => {
         </div>
     );
 
-    // =============================================================================
-    // RENDER: Dashboard completo
-    // =============================================================================
     return (
         <>
             <Toast message={errorMessage} type="error" onClose={() => setErrorMessage(null)} />
@@ -603,7 +527,6 @@ export const Dashboard = () => {
                     isOpen={sidebarOpen}
                     onClose={() => setSidebarOpen(false)}
                 />
-                {/* Header móvil */}
                 <div className="mobile-header">
                     <button className="mobile-menu-btn" onClick={() => setSidebarOpen(true)}>
                         <i className="fas fa-bars"></i>
@@ -622,7 +545,6 @@ export const Dashboard = () => {
                         {activeTab === "stats" && "Estadísticas"}
                     </h2>
 
-                    {/* Panel de Resumen */}
                     {activeTab === "overview" && (
                         <OverviewPanel
                             totalRecipes={totalRecipes}
@@ -632,7 +554,6 @@ export const Dashboard = () => {
                         />
                     )}
 
-                    {/* Panel de Ingredientes */}
                     {activeTab === "ingredients" && (
                         <IngredientsPanel
                             ingredients={store.ingredients}
@@ -642,7 +563,6 @@ export const Dashboard = () => {
                         />
                     )}
 
-                    {/* Panel de Recetas */}
                     {activeTab === "recipes" && (
                         <RecipesPanel
                             recipes={store.recipes}
@@ -655,7 +575,6 @@ export const Dashboard = () => {
                         />
                     )}
 
-                    {/* Panel de Pedidos */}
                     {activeTab === "orders" && (
                         <OrdersPanel
                             orders={store.orders}
@@ -667,7 +586,6 @@ export const Dashboard = () => {
                         />
                     )}
 
-                    {/* Panel de Clientes */}
                     {activeTab === "clients" && (
                         <ClientsPanel
                             clients={store.clients}
@@ -676,12 +594,10 @@ export const Dashboard = () => {
                         />
                     )}
 
-                    {/* Panel de Finanzas */}
                     {activeTab === "finanzas" && (
                         <FinanzasPanel backendUrl={backendUrl} />
                     )}
 
-                    {/* Panel de Estadísticas */}
                     {activeTab === "stats" && (
                         <StatsPanel
                             orders={store.orders}
@@ -691,7 +607,6 @@ export const Dashboard = () => {
                     )}
                 </div>
 
-                {/* Modal confirmación eliminar receta */}
                 {deleteConfirm && (
                     <div className="modal-overlay">
                         <div style={{ backgroundColor: '#1e1e2f', padding: '30px', borderRadius: '15px', color: 'white', textAlign: 'center' }}>
@@ -704,7 +619,6 @@ export const Dashboard = () => {
                     </div>
                 )}
 
-                {/* Modal ver/editar receta */}
                 {showModal && selectedRecipe && (
                     <RecipeViewModal
                         show={showModal}
@@ -726,7 +640,6 @@ export const Dashboard = () => {
                     />
                 )}
 
-                {/* Modal nueva receta */}
                 {showNewRecipe && (
                     <NewRecipeModal
                         show={showNewRecipe}
@@ -743,7 +656,6 @@ export const Dashboard = () => {
                     />
                 )}
 
-                {/* Modal nuevo ingrediente */}
                 {showNewIngredient && (
                     <div className="modal-overlay" onClick={() => { setShowNewIngredient(false); setIngredientSource(''); }}>
                         <div className="modal-content small" onClick={e => e.stopPropagation()}>
@@ -774,7 +686,6 @@ export const Dashboard = () => {
                     </div>
                 )}
 
-                {/* Modal editar ingrediente */}
                 {editingIngredient && (
                     <div className="modal-overlay" onClick={() => setEditingIngredient(null)}>
                         <div className="modal-content small" onClick={e => e.stopPropagation()}>
@@ -796,22 +707,16 @@ export const Dashboard = () => {
                     </div>
                 )}
 
-                {/* Modal confirmar guardar receta */}
                 {editConfirm && <ConfirmModal show={editConfirm} onClose={() => setEditConfirm(false)} onConfirm={handleSaveRecipeEdit} title="¿Guardar cambios?" message="Se modificarán nombre, precio e ingredientes." />}
 
-                {/* Modal nuevo ingrediente desde edición de receta */}
                 {showNewIngredientEdit && <NewIngredientModal show={showNewIngredientEdit} onClose={() => setShowNewIngredientEdit(false)} ingredient={newIngredientEdit} onSave={(ing) => { createNewIngredientForRecipeEdit(); setShowNewIngredientEdit(false); }} isNew={true} />}
 
-                {/* Modal nuevo pedido */}
                 {showNewOrder && <NewOrderModal show={showNewOrder} onClose={() => { setShowNewOrder(false); setNewOrderItems([]); }} newOrder={newOrder} setNewOrder={setNewOrder} newOrderItems={newOrderItems} setNewOrderItems={setNewOrderItems} selectedRecipe={selectedRecipeForOrder} setSelectedRecipe={setSelectedRecipeForOrder} orderItemQty={orderItemQty} setOrderItemQty={setOrderItemQty} store={store} onAddItem={handleAddItemToNewOrder} onSave={handleSaveNewOrder} />}
 
-                {/* Modal nuevo cliente */}
                 {showNewClient && <NewClientModal show={showNewClient} onClose={() => setShowNewClient(false)} newClient={newClient} setNewClient={setNewClient} onSave={handleSaveNewClient} />}
 
-                {/* Modal confirmar producción */}
                 {productionConfirm && <ProductionConfirmModal show={productionConfirm} onClose={() => setProductionConfirm(null)} onConfirm={handleConfirmProduction} orderId={productionConfirm} />}
 
-                {/* Modal editar pedido */}
                 {selectedOrderEdit && <EditOrderModal show={selectedOrderEdit} onClose={() => setSelectedOrderEdit(null)} order={selectedOrderEdit} setOrder={setSelectedOrderEdit} editOrderItems={editOrderItems} setEditOrderItems={setEditOrderItems} selectedRecipe={selectedRecipeForOrder} setSelectedRecipe={setSelectedRecipeForOrder} orderItemQty={orderItemQty} setOrderItemQty={setOrderItemQty} store={store} onAddItem={handleAddItemToEditOrder} onSave={handleSaveOrderEdit} />}
             </div>
         </>

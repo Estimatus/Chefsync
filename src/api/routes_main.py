@@ -1,10 +1,6 @@
-# =============================================================================
-# ARCHIVO: routes_main.py
-# DESCRIPCIÓN: Punto de entrada principal de la API.
-# Registra todos los blueprints bajo prefijo /api.
-# Incluye endpoint de prueba /hello.
-# =============================================================================
-
+"""
+API principal - registra todos los blueprints.
+"""
 from flask import Blueprint, jsonify
 from api.routes.ingredients import ingredients_bp
 from api.routes.recipes import recipes_bp
@@ -14,15 +10,9 @@ from api.routes.users import users_bp
 from api.routes.recipe_items import recipe_ingredients_bp
 from api.routes.transactions import transactions_bp
 
-# Blueprint principal de la API
 api = Blueprint('api', __name__)
 
-# =============================================================================
-# GET/POST /api/hello
-# =============================================================================
-# Endpoint de prueba para verificar conexión con el backend.
-# Returns: JSON con mensaje de saludo
-# =============================================================================
+# Hello endpoint
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
     response_body = {
@@ -30,7 +20,7 @@ def handle_hello():
     }
     return jsonify(response_body), 200
 
-# Registrar todos los blueprints con sus prefijos de URL
+# Registrar blueprints
 api.register_blueprint(ingredients_bp, url_prefix='/ingredients')
 api.register_blueprint(recipes_bp, url_prefix='/recipes')
 api.register_blueprint(clients_bp, url_prefix='/clients')

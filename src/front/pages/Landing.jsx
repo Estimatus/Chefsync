@@ -67,25 +67,15 @@ export const Landing = () => {
                         Chef<span style={{ color: "var(--accent)" }}>sync</span>
                     </span>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <Link to="/login" style={{
-                        color: "var(--text)",
-                        fontSize: "13px", fontWeight: 600,
-                        textDecoration: "none", fontFamily: "var(--font-head)",
-                        padding: "7px 14px"
-                    }}>
-                        Iniciar sesión
-                    </Link>
-                    <Link to="/signup" style={{
-                        background: "var(--accent)", color: "#0f0f11",
-                        padding: "7px 18px", borderRadius: "8px",
-                        fontSize: "13px", fontWeight: 700,
-                        textDecoration: "none", fontFamily: "var(--font-head)",
-                        transition: "background 0.15s",
-                    }}>
-                        Empezar gratis →
-                    </Link>
-                </div>
+                <Link to="/login" style={{
+                    background: "var(--accent)", color: "#0f0f11",
+                    padding: "7px 18px", borderRadius: "8px",
+                    fontSize: "13px", fontWeight: 700,
+                    textDecoration: "none", fontFamily: "var(--font-head)",
+                    transition: "background 0.15s",
+                }}>
+                    Iniciar sesión →
+                </Link>
             </nav>
 
             {/* Hero */}
@@ -122,7 +112,7 @@ export const Landing = () => {
                     </p>
 
                     <div className="fade-up" style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
-                        <Link to="/signup" style={{
+                        <Link to="/login" style={{
                             background: "var(--accent)", color: "#0f0f11",
                             padding: "13px 28px", borderRadius: "10px",
                             fontSize: "15px", fontWeight: 700,
@@ -219,7 +209,7 @@ export const Landing = () => {
                                         </div>
                                     ))}
                                 </div>
-                                <Link to="/signup" style={{
+                                <Link to="/login" style={{
                                     display: "block", textAlign: "center",
                                     background: highlight ? "var(--accent)" : "var(--bg3)",
                                     color: highlight ? "#0f0f11" : "var(--text)",
