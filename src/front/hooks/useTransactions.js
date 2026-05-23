@@ -1,7 +1,7 @@
-# =============================================================================
-# HOOK: useTransactions
-# Hook de React para manejar transacciones de caja desde el frontend.
-# =============================================================================
+// =============================================================================
+// HOOK: useTransactions
+// Hook de React para manejar transacciones de caja desde el frontend.
+// =============================================================================
 
 import { useState, useCallback } from 'react';
 import { apiFetch } from '../utils/api';
@@ -12,10 +12,10 @@ export const useTransactions = (backendUrl) => {
     const [transactions, setTransactions] = useState([]);
     const [summary, setSummary] = useState(null);
 
-    # =============================================================================
-    # FETCH TRANSACTIONS - Obtener lista de transacciones
-    # Params: month (YYYY-MM), type (income|expense)
-    # =============================================================================
+    // =============================================================================
+    // FETCH TRANSACTIONS - Obtener lista de transacciones
+    // Params: month (YYYY-MM), type (income|expense)
+    // =============================================================================
     const fetchTransactions = useCallback(async (month = null, type = null) => {
         try {
             setLoading(true);
@@ -37,9 +37,9 @@ export const useTransactions = (backendUrl) => {
         }
     }, [backendUrl]);
 
-    # =============================================================================
-    # FETCH SUMMARY - Obtener resumen financiero (KPIs)
-    # =============================================================================
+    // =============================================================================
+    // FETCH SUMMARY - Obtener resumen financiero (KPIs)
+    // =============================================================================
     const fetchSummary = useCallback(async (month = null) => {
         try {
             const currentMonth = month || new Date().toISOString().slice(0, 7);
@@ -53,9 +53,9 @@ export const useTransactions = (backendUrl) => {
         }
     }, [backendUrl]);
 
-    # =============================================================================
-    # CREATE TRANSACTION - Registrar nuevo movimiento
-    # =============================================================================
+    // =============================================================================
+    // CREATE TRANSACTION - Registrar nuevo movimiento
+    // =============================================================================
     const createTransaction = useCallback(async (transaction) => {
         try {
             setLoading(true);
@@ -78,9 +78,9 @@ export const useTransactions = (backendUrl) => {
         }
     }, [backendUrl, fetchTransactions, fetchSummary]);
 
-    # =============================================================================
-    # DELETE TRANSACTION - Eliminar un movimiento
-    # =============================================================================
+    // =============================================================================
+    // DELETE TRANSACTION - Eliminar un movimiento
+    // =============================================================================
     const deleteTransaction = useCallback(async (id) => {
         try {
             setLoading(true);

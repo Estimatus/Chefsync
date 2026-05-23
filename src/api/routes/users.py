@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from api.models import db, User, Tenant
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 users_bp = Blueprint('users', __name__)
 
@@ -33,7 +34,7 @@ def create_user():
 
     user = User(
         email=data['email'],
-        password=data['password'],
+        password=generate_password_hash(data['password']),
         role=data.get('role', 'admin'),
         is_active=True,
         tenant_id=tenant.id if tenant else None
@@ -77,7 +78,7 @@ def login():
         return jsonify({'error': 'email y password son obligatorios'}), 400
 
     user = User.query.filter_by(email=data['email'], is_active=True).first()
-    if not user or user.password != data['password']:
+    if not user or not check_password_hash(user.password, data['password']):
         return jsonify({'error': 'Credenciales inválidas'}), 401
 
     # Incluir info del tenant en el response
